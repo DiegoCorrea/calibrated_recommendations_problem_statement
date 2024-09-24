@@ -1,0 +1,12 @@
+{
+  "experiment_name": "COMPARING_MODELS",
+  "opt": "SPLIT",
+  "based_on": "CROSS_TRAIN_VALIDATION_TEST",
+  "dataset": "ml-1m",
+  "n_folds": 3,
+  "n_trials": 1,
+  "cut_value": 4,
+  "item_cut_value": 5,
+  "profile_len_cut_value": 30,
+  "test_len_cut_value": 10
+}

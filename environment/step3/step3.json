@@ -1,0 +1,12 @@
+{
+  "opt": "RECOMMENDER",
+  "based_on": "CVTT",
+  "n_jobs": 61,
+  "checkpoint": "YES",
+  "dataset": ["ml-20m", "food", "ml-1m"],
+  "recommender": ["DEEP_AE", "BPR", "ALS"],
+  "fold": [1, 2, 3],
+  "trial": [1],
+  "list_size": 100,
+  "metric": "rmse"
+}

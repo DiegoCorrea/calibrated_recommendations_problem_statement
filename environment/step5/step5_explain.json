@@ -1,0 +1,24 @@
+{
+  "multiprocessing": "joblib",
+  "n_jobs": 1,
+  "checkpoint": "NO",
+  "opt": "EVALUATION_METRICS",
+  "metric": [
+    "EXPLAIN_MC"
+  ],
+  "recommender": ["ALS"],
+  "cluster": [],
+  "dataset": ["food"],
+  "fold": [1],
+  "trial": [1],
+  "tradeoff": ["LIN"],
+  "fairness": ["KL"],
+  "relevance": ["SUM"],
+  "weight": [
+    "C@0.5"
+  ],
+  "distribution": [
+    "CWS"
+  ],
+  "selector": ["SURROGATE"]
+}

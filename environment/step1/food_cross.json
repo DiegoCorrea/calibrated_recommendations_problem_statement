@@ -1,0 +1,12 @@
+{
+  "experiment_name": "COMPARING_MODELS",
+  "dataset": "food",
+  "opt": "SPLIT",
+  "based_on": "CROSS_TRAIN_VALIDATION_TEST",
+  "n_folds": 3,
+  "n_trials": 1,
+  "cut_value": 3,
+  "item_cut_value": 1,
+  "profile_len_cut_value": 30,
+  "test_len_cut_value": 10
+}

@@ -1,0 +1,7 @@
+{
+  "experiment_name": "COMPARING_MODELS",
+  "opt": "CLASS_ONE_HOT_ENCODE",
+  "dataset": "ml-1m",
+  "based_on": "CVTT",
+  "n_jobs": 1
+}

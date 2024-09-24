@@ -1,0 +1,35 @@
+{
+  "multiprocessing": "joblib",
+  "n_jobs": 5,
+  "checkpoint": "NO",
+  "opt": "EVALUATION_METRICS",
+  "metric": [
+    "ILS",
+    "PERSONALIZATION"
+  ],
+  "recommender": ["BPR"],
+  "dataset": ["food"],
+  "fold": [1, 2, 3],
+  "trial": [1],
+  "tradeoff": ["LIN"],
+  "fairness": ["KL"],
+  "relevance": ["SUM"],
+  "weight": [
+    "C@0.0", "C@0.1", "C@0.2",
+    "C@0.3", "C@0.4", "C@0.5",
+    "C@0.6", "C@0.7", "C@0.8",
+    "C@0.9", "C@1.0"
+  ],
+  "distribution": [
+    "CWS",
+    "WPS",
+    "GLEB",
+    "TWB",
+    "TSW",
+    "TWB_GLEB",
+    "TSW_GLEB",
+    "TSW_TWB_GLEB",
+    "TSW_TWB_GLEB_P"
+  ],
+  "selector": ["SURROGATE"]
+}

@@ -1,0 +1,13 @@
+{
+  "experiment_name": "COMPARING_MODELS",
+  "multiprocessing": "starmap",
+  "n_jobs": 63,
+  "opt": "DISTRIBUTION",
+  "based_on": "CROSS_TRAIN_VALIDATION_TEST",
+  "dataset": "ml-1m",
+  "distribution": [
+    "CWS"
+  ],
+  "fold": [1, 2, 3],
+  "trial": [1]
+}

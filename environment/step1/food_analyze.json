@@ -1,0 +1,6 @@
+{
+  "experiment_name": "COMPARING_MODELS",
+  "opt": "ANALYZE",
+  "dataset": "food",
+  "based_on": "CVTT"
+}

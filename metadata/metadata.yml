@@ -1,0 +1,12 @@
+metadata_version: 0.2
+name: Pierre in Frame
+description: Pierre-In-Frame is a how-to-use the Scikit-Pierre
+tags:
+- Recommender System
+- Fairness
+- Calibration
+- Post-Processing
+authors:
+- name: Diego Corrêa da Silva
+  affiliations:
+  - name: Federal University of Bahia

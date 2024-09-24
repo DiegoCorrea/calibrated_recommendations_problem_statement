@@ -1,0 +1,13 @@
+{
+  "experiment_name": "COMPARING_MODELS",
+  "dataset": "food",
+  "based_on": "CROSS_TRAIN_VALIDATION_TEST",
+  "opt": "DISTRIBUTION",
+  "distribution": [
+    "CWS"
+  ],
+  "fold": [1, 2, 3],
+  "trial": [1],
+  "multiprocessing": "starmap",
+  "n_jobs": 5
+}
