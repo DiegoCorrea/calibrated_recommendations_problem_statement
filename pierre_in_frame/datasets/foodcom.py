@@ -132,11 +132,13 @@ class FoodComRecipe(Dataset):
         print(f"Minimum: {min_c}")
         self.transactions.to_csv(
             os.path.join(self.clean_dataset_dir, PathDirFile.TRANSACTIONS_FILE),
-            index=False
+            index=False,
+            mode='w+'
         )
         self.items.to_csv(os.path.join(
             self.clean_dataset_dir, PathDirFile.ITEMS_FILE),
-            index=False
+            index=False,
+            mode='w+'
         )
 
     # ######################################### #
@@ -181,7 +183,10 @@ class FoodComRecipe(Dataset):
         })
 
         # Save the clean transactions as CSV.
-        self.items.to_csv(os.path.join(self.clean_dataset_dir, PathDirFile.ITEMS_FILE), index=False)
+        self.items.to_csv(
+            os.path.join(self.clean_dataset_dir, PathDirFile.ITEMS_FILE),
+            mode='w+', index=False
+        )
 
     def raw_data_basic_info(self):
         """

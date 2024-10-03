@@ -103,6 +103,8 @@ class ImplicitGridSearch(BaseSearch):
             )
             map_value.append(metric_instance.compute())
             mrr_value.append(mrr_metric_instance.compute())
+        print(f"map list: {map_value}\n"
+              f"mrr list: {mrr_value}")
 
         return {
             "map": mean(map_value),
@@ -142,6 +144,8 @@ class ImplicitGridSearch(BaseSearch):
             )
             map_value.append(metric_instance.compute())
             mrr_value.append(mrr_metric_instance.compute())
+        print(f"map list: {map_value}\n"
+              f"mrr list: {mrr_value}")
 
         return {
             "map": mean(map_value),

@@ -16,7 +16,7 @@ class BaseSearch:
             algorithm: str, experiment_name: str,
             dataset_name: str, trial: int = 1, fold: int = 3,
             n_jobs: int = 1, list_size: int = 10, n_inter: int = 50,
-            based_on: str = "RANDOM", multiprocessing_lib: str = Label.JOBLIB
+            based_on: str = Label.CROSS_TRAIN_VALIDATION_TEST, multiprocessing_lib: str = Label.JOBLIB
     ):
         """
         Parameters
@@ -47,17 +47,14 @@ class BaseSearch:
         self.item_df = self.dataset.get_items()
         for t in range(1, self.trial + 1):
             for f in range(1, self.fold + 1):
-                self.train_list.append(self.dataset.get_train_transactions(
-                    fold=f, trial=t
-                ))
+                train_df = self.dataset.get_train_transactions(fold=f, trial=t)
+                self.train_list.append(train_df)
                 if self.based_on in Label.BASED_ON_VALIDATION:
-                    self.valid_list.append(self.dataset.get_validation_transactions(
-                        fold=f, trial=t
-                    ))
+                    valid_df = self.dataset.get_validation_transactions(fold=f, trial=t)
+                    self.valid_list.append(valid_df)
                 else:
-                    self.valid_list.append(self.dataset.get_test_transactions(
-                        fold=f, trial=t
-                    ))
+                    test_df = self.dataset.get_test_transactions(fold=f, trial=t)
+                    self.valid_list.append(test_df)
 
     def defining_metric_and_save(self):
         """

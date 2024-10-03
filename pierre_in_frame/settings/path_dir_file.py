@@ -1,9 +1,6 @@
 import os
 from pathlib import Path
 
-from pandas import DataFrame, read_csv
-
-
 class PathDirFile:
     # Base Path
     BASE_DIR = Path(__file__).resolve().parent.parent.parent.as_posix()
@@ -414,7 +411,9 @@ class PathDirFile:
             tradeoff_weight: str, select_item: str) -> str:
         f"""
         Log directory. This method is to deal with the log in the postprocessing step.
-
+        
+        :param experiment_name: A string that represents the experiment name.
+        :param based_on: A string that represents the type of split.
         :param dataset: A string that's representing the dataset name.
         :param recommender: A string that's representing the recommender algorithm name.
         :param trial: The trial number.
@@ -441,117 +440,20 @@ class PathDirFile:
         return save_in_dir + '/'
 
     # ########################################################################################### #
-    # Final Results
-    @staticmethod
-    def set_metric_file(recommender: str, dataset: str, distribution: str, fairness: str, relevance: str,
-                        tradeoff_weight: str, tradeoff: str, select_item: str) -> str:
-        """
-        Method to set the file path, which deal with the metric results.
-
-        :param dataset: A string that's representing the dataset name.
-        :param recommender: A string that's representing the recommender algorithm name.
-        :param tradeoff: The tradeoff balance component name.
-        :param distribution: The distribution component name.
-        :param fairness: The fairness measure name.
-        :param relevance: The relevance measure name.
-        :param tradeoff_weight: The tradeoff weight component name.
-        :param select_item: The select item algorithm name.
-
-        :return: A string like results/metrics/postprocessing/{dataset}/{recommender}/{tradeoff_component}/
-        {distribution_component}/{relevance_component}/{selector_component}/{fairness_component}/{tradeoff_weight_component}/metrics.csv
-        """
-        save_in_dir = "/".join([PathDirFile.RESULTS_METRICS_DIR, dataset, recommender,
-                                tradeoff, distribution, relevance, select_item, fairness, tradeoff_weight])
-        if not os.path.exists(save_in_dir):
-            os.makedirs(save_in_dir)
-        return save_in_dir + '/' + PathDirFile.SYSTEM_METRICS_FILE
-
-    @staticmethod
-    def get_metric_file(recommender: str, dataset: str, distribution: str, fairness: str, relevance: str,
-                        tradeoff_weight: str, tradeoff: str, select_item: str) -> str:
-        """
-        Method to get the file path, which deal with the metric results.
-
-        :param dataset: A string that's representing the dataset name.
-        :param recommender: A string that's representing the recommender algorithm name.
-        :param tradeoff: The tradeoff balance component name.
-        :param distribution: The distribution component name.
-        :param fairness: The fairness measure name.
-        :param relevance: The relevance measure name.
-        :param tradeoff_weight: The tradeoff weight component name.
-        :param select_item: The select item algorithm name.
-
-        :return: A string like results/metrics/postprocessing/{dataset}/{recommender}/{tradeoff_component}/
-        {distribution_component}/{relevance_component}/{selector_component}/{fairness_component}/{tradeoff_weight_component}/metrics.csv
-        """
-        save_in_dir = "/".join([PathDirFile.RESULTS_METRICS_DIR, dataset, recommender,
-                                tradeoff, distribution, relevance, select_item, fairness, tradeoff_weight])
-        return save_in_dir + '/' + PathDirFile.SYSTEM_METRICS_FILE
-
-    @staticmethod
-    def set_metric_fold_file(dataset: str, recommender: str, trial: int, fold: int,
-                             tradeoff: str, distribution: str, fairness: str, relevance: str,
-                             tradeoff_weight: str, select_item: str) -> str:
-        """
-        Method to set the file path, which deal with the postprocessing step execution time.
-
-        :param dataset: A string that's representing the dataset name.
-        :param recommender: A string that's representing the recommender algorithm name.
-        :param trial: The trial number.
-        :param fold: The fold number.
-        :param tradeoff: The tradeoff balance component name.
-        :param distribution: The distribution component name.
-        :param fairness: The fairness measure name.
-        :param relevance: The relevance measure name.
-        :param tradeoff_weight: The tradeoff weight component name.
-        :param select_item: The select item algorithm name.
-
-        :return: A string like data/app/{dataset}/time/processing/{recommender}/{tradeoff_component}/
-        {distribution_component}/{relevance_component}/{selector_component}/{fairness_component}/{tradeoff_weight_component}/
-        trial-{trial}/fold-{fold}/time.csv.
-        """
-        save_in_dir = "/".join([PathDirFile.DATA_DIR, 'app', dataset, 'metrics', recommender,
-                                tradeoff, distribution, relevance, select_item, fairness, tradeoff_weight,
-                                'trial-' + str(trial), 'fold-' + str(fold)])
-        if not os.path.exists(save_in_dir):
-            os.makedirs(save_in_dir)
-        return "/".join([save_in_dir, PathDirFile.METRICS_FILE])
-
-    @staticmethod
-    def get_metric_fold_file(dataset: str, recommender: str, trial: int, fold: int,
-                             tradeoff: str, distribution: str, fairness: str, relevance: str,
-                             tradeoff_weight: str, select_item: str) -> str:
-        """
-        Method to get the file path, which deal with the postprocessing step execution time.
-
-        :param dataset: A string that's representing the dataset name.
-        :param recommender: A string that's representing the recommender algorithm name.
-        :param trial: The trial number.
-        :param fold: The fold number.
-        :param tradeoff: The tradeoff balance component name.
-        :param distribution: The distribution component name.
-        :param fairness: The fairness measure name.
-        :param relevance: The relevance measure name.
-        :param tradeoff_weight: The tradeoff weight component name.
-        :param select_item: The select item algorithm name.
-
-        :return: A string like data/app/{dataset}/metrics/{recommender}/{tradeoff_component}/
-        {distribution_component}/{relevance_component}/{selector_component}/{fairness_component}/{tradeoff_weight_component}/
-        trial-{trial}/fold-{fold}/metrics.csv.
-        """
-        save_in_dir = "/".join([PathDirFile.DATA_DIR, 'app', dataset, 'metrics', recommender,
-                                tradeoff, distribution, relevance, select_item, fairness, tradeoff_weight,
-                                'trial-' + str(trial), 'fold-' + str(fold)])
-        return "/".join([save_in_dir, PathDirFile.METRICS_FILE])
+    # ########################################################################################### #
+    # ########################################################################################### #
 
     @staticmethod
     def set_recommender_metric_fold_file(
+            experiment_name: str, based_on: str,
             dataset: str, recommender: str, trial: int, fold: int,
             tradeoff: str, distribution: str, fairness: str, relevance: str,
             tradeoff_weight: str, select_item: str, filename: str) -> str:
-        """
+        f"""
         Method to set the file path, which deal with the postprocessing step execution time.
-
+        
+        :param experiment_name: A string that represents the experiment name.
+        :param based_on: A string that represents the type of split.
         :param dataset: A string that's representing the dataset name.
         :param recommender: A string that's representing the recommender algorithm name.
         :param trial: The trial number.
@@ -564,26 +466,31 @@ class PathDirFile:
         :param select_item: The select item algorithm name.
         :param filename:
 
-        :return: A string like data/app/{dataset}/time/processing/{recommender}/{tradeoff_component}/
-        {distribution_component}/{relevance_component}/{selector_component}/{fairness_component}/{tradeoff_weight_component}/
-        trial-{trial}/fold-{fold}/{filename}.
+        :return: A string like 
+        data/{experiment_name}/metrics/{dataset}/{based_on}/
+        {recommender}/{tradeoff}/{distribution}/{relevance}/{select_item}/
+        {fairness}/{tradeoff_weight}/trial-{trial}/fold-{fold}/
         """
         save_in_dir = "/".join([
-            PathDirFile.EXPERIMENT_DIR, dataset, 'metrics', recommender,
-            tradeoff, distribution, relevance, select_item, fairness, tradeoff_weight,
-            'trial-' + str(trial), 'fold-' + str(fold)])
+            PathDirFile.DATA_DIR, experiment_name, 'metrics', dataset, based_on,
+            recommender, tradeoff, distribution, relevance, select_item,
+            fairness, tradeoff_weight, 'trial-' + str(trial), 'fold-' + str(fold)
+        ])
         if not os.path.exists(save_in_dir):
             os.makedirs(save_in_dir)
         return "/".join([save_in_dir, filename])
 
     @staticmethod
     def get_recommender_metric_fold_file(
+            experiment_name: str, based_on: str,
             dataset: str, recommender: str, trial: int, fold: int,
             tradeoff: str, distribution: str, fairness: str, relevance: str,
             tradeoff_weight: str, select_item: str, filename: str) -> str:
-        """
+        f"""
         Method to get the file path, which deal with the postprocessing step execution time.
-
+        
+        :param experiment_name: A string that represents the experiment name.
+        :param based_on: A string that represents the type of split.
         :param dataset: A string that's representing the dataset name.
         :param recommender: A string that's representing the recommender algorithm name.
         :param trial: The trial number.
@@ -596,24 +503,29 @@ class PathDirFile:
         :param select_item: The select item algorithm name.
         :param filename:
 
-        :return: A string like data/app/{dataset}/metrics/{recommender}/{tradeoff_component}/
-        {distribution_component}/{relevance_component}/{selector_component}/{fairness_component}/{tradeoff_weight_component}/
-        trial-{trial}/fold-{fold}/{filename}.
+        :return: A string like
+        data/{experiment_name}/metrics/{dataset}/{based_on}/
+        {recommender}/{tradeoff}/{distribution}/{relevance}/{select_item}/
+        {fairness}/{tradeoff_weight}/trial-{trial}/fold-{fold}/
         """
         save_in_dir = "/".join([
-            PathDirFile.EXPERIMENT_DIR, dataset, 'metrics', recommender,
-            tradeoff, distribution, relevance, select_item, fairness, tradeoff_weight,
-            'trial-' + str(trial), 'fold-' + str(fold)])
+            PathDirFile.DATA_DIR, experiment_name, 'metrics', dataset, based_on,
+            recommender, tradeoff, distribution, relevance, select_item,
+            fairness, tradeoff_weight, 'trial-' + str(trial), 'fold-' + str(fold)
+        ])
         return "/".join([save_in_dir, filename])
 
     @staticmethod
     def set_conformity_metric_fold_file_by_name(
+            experiment_name: str, based_on: str,
             dataset: str, recommender: str, trial: int, fold: int,
             tradeoff: str, distribution: str, fairness: str, relevance: str,
             tradeoff_weight: str, select_item: str, cluster: str, filename: str) -> str:
-        """
+        f"""
         Method to set the file path, which deal with the postprocessing step execution time.
-
+        
+        :param experiment_name: A string that represents the experiment name.
+        :param based_on: A string that represents the type of split.
         :param dataset: A string that's representing the dataset name.
         :param recommender: A string that's representing the recommender algorithm name.
         :param trial: The trial number.
@@ -624,19 +536,18 @@ class PathDirFile:
         :param relevance: The relevance measure name.
         :param tradeoff_weight: The tradeoff weight component name.
         :param select_item: The select item algorithm name.
-        :param filename:
+        :param cluster: TODO
+        :param filename: TODO
 
-        :return: A string like data/app/{dataset}/time/processing/{recommender}/{tradeoff_component}/
-        {distribution_component}/{relevance_component}/{selector_component}/{fairness_component}/{tradeoff_weight_component}/
-        trial-{trial}/fold-{fold}/{filename}.
-
-                data/experiment/{dataset}/candidate_items/{algorithm}/trial-{trial}/fold-{fold}/candidate_items.csv.
-
+        :return: A string like 
+        data/{experiment_name}/metrics/{dataset}/{based_on}/
+        {recommender}/{tradeoff}/{distribution}/{relevance}/{select_item}/
+        {fairness}/{tradeoff_weight}/trial-{trial}/fold-{fold}/{cluster}
         """
         save_in_dir = "/".join([
-            PathDirFile.EXPERIMENT_DIR, dataset, 'metrics', recommender,
-            tradeoff, distribution, relevance, select_item, fairness, tradeoff_weight,
-            'trial-' + str(trial), 'fold-' + str(fold), cluster
+            PathDirFile.DATA_DIR, experiment_name, 'metrics', dataset, based_on,
+            recommender, tradeoff, distribution, relevance, select_item,
+            fairness, tradeoff_weight, 'trial-' + str(trial), 'fold-' + str(fold), cluster
         ])
         if not os.path.exists(save_in_dir):
             os.makedirs(save_in_dir)
@@ -644,12 +555,15 @@ class PathDirFile:
 
     @staticmethod
     def get_conformity_metric_fold_file_by_name(
+            experiment_name: str, based_on: str,
             dataset: str, recommender: str, trial: int, fold: int,
             tradeoff: str, distribution: str, fairness: str, relevance: str,
             tradeoff_weight: str, select_item: str, cluster: str, filename: str) -> str:
-        """
+        f"""
         Method to get the file path, which deal with the postprocessing step execution time.
-
+        
+        :param experiment_name: A string that represents the experiment name.
+        :param based_on: A string that represents the type of split.
         :param dataset: A string that's representing the dataset name.
         :param recommender: A string that's representing the recommender algorithm name.
         :param trial: The trial number.
@@ -660,76 +574,20 @@ class PathDirFile:
         :param relevance: The relevance measure name.
         :param tradeoff_weight: The tradeoff weight component name.
         :param select_item: The select item algorithm name.
+        :param cluster: TODO
         :param filename:
 
-        :return: A string like data/app/{dataset}/metrics/{recommender}/{tradeoff_component}/
-        {distribution_component}/{relevance_component}/{selector_component}/{fairness_component}/{tradeoff_weight_component}/
-        trial-{trial}/fold-{fold}/{filename}.
+        :return: A string like 
+        data/{experiment_name}/metrics/{dataset}/{based_on}/
+        {recommender}/{tradeoff}/{distribution}/{relevance}/{select_item}/
+        {fairness}/{tradeoff_weight}/trial-{trial}/fold-{fold}/{cluster}
         """
         save_in_dir = "/".join([
-            PathDirFile.EXPERIMENT_DIR, dataset, 'metrics', recommender,
-            tradeoff, distribution, relevance, select_item, fairness, tradeoff_weight,
-            'trial-' + str(trial), 'fold-' + str(fold), cluster
+            PathDirFile.DATA_DIR, experiment_name, 'metrics', dataset, based_on,
+            recommender, tradeoff, distribution, relevance, select_item,
+            fairness, tradeoff_weight, 'trial-' + str(trial), 'fold-' + str(fold), cluster
         ])
         return "/".join([save_in_dir, filename])
-
-    @staticmethod
-    def set_conformity_metrics_time_file(
-            dataset: str, recommender: str, trial: int, fold: int, tradeoff: str, distribution: str, fairness: str,
-            relevance: str, tradeoff_weight: str, select_item: str, cluster: str
-    ) -> str:
-        """
-        Method to set the file path, which deal with the postprocessing step execution time.
-
-        :param dataset: A string that's representing the dataset name.
-        :param recommender: A string that's representing the recommender algorithm name.
-        :param trial: The trial number.
-        :param fold: The fold number.
-        :param tradeoff: The tradeoff balance component name.
-        :param distribution: The distribution component name.
-        :param fairness: The fairness measure name.
-        :param relevance: The relevance measure name.
-        :param tradeoff_weight: The tradeoff weight component name.
-        :param select_item: The select item algorithm name.
-
-        :return: A string like data/experiment/{dataset}/time/processing/{recommender}/{tradeoff_component}/
-        {distribution_component}/{relevance_component}/{selector_component}/{fairness_component}/{tradeoff_weight_component}/
-        trial-{trial}/fold-{fold}/time.csv.
-        """
-        save_in_dir = "/".join([PathDirFile.EXPERIMENT_DIR, dataset, 'time', 'metrics', recommender,
-                                tradeoff, distribution, relevance, select_item, fairness, tradeoff_weight,
-                                'trial-' + str(trial), 'fold-' + str(fold), cluster])
-        if not os.path.exists(save_in_dir):
-            os.makedirs(save_in_dir)
-        return "/".join([save_in_dir, PathDirFile.TIME_FILE])
-
-    @staticmethod
-    def get_metrics_time_file(
-            dataset: str, recommender: str, trial: int, fold: int, tradeoff: str, distribution: str, fairness: str,
-            relevance: str, tradeoff_weight: str, select_item: str, cluster: str
-    ) -> str:
-        """
-        Method to get the file path, which deal with the postprocessing step execution time.
-
-        :param dataset: A string that's representing the dataset name.
-        :param recommender: A string that's representing the recommender algorithm name.
-        :param trial: The trial number.
-        :param fold: The fold number.
-        :param tradeoff: The tradeoff balance component name.
-        :param distribution: The distribution component name.
-        :param fairness: The fairness measure name.
-        :param relevance: The relevance measure name.
-        :param tradeoff_weight: The tradeoff weight component name.
-        :param select_item: The select item algorithm name.
-
-        :return: A string like data/app/{dataset}/time/processing/{recommender}/{tradeoff_component}/
-        {distribution_component}/{relevance_component}/{selector_component}/{fairness_component}/{tradeoff_weight_component}/
-        trial-{trial}/fold-{fold}/ime.csv.
-        """
-        save_in_dir = "/".join([PathDirFile.EXPERIMENT_DIR, dataset, 'time', 'metrics', recommender,
-                                tradeoff, distribution, relevance, select_item, fairness, tradeoff_weight,
-                                'trial-' + str(trial), 'fold-' + str(fold), cluster])
-        return "/".join([save_in_dir, PathDirFile.TIME_FILE])
 
     @staticmethod
     def set_log_metrics_path(
@@ -760,6 +618,8 @@ class PathDirFile:
             os.makedirs(save_in_dir)
         return save_in_dir + '/'
 
+    # ########################################################################################### #
+    # ########################################################################################### #
     # ########################################################################################### #
     # Decision
     @staticmethod

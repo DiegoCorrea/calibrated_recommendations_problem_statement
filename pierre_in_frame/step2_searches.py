@@ -4,11 +4,9 @@ import logging
 from searches.conformity_search import ManualConformityAlgorithmSearch
 from searches.implicit_search import ImplicitGridSearch
 from searches.pierre_search import PierreGridSearch
-from searches.recommender_search import RecommenderSearch, SurpriseRandomSearch
+from searches.recommender_search import SurpriseRandomSearch
 from settings.labels import Label
 from settings.path_dir_file import PathDirFile
-from settings.save_and_load import SaveAndLoad
-from utils.clocker import Clocker
 from utils.input import Input
 from utils.logging_settings import setup_logging
 from utils.step import Step
@@ -73,9 +71,6 @@ class PierreStep2(Step):
         TODO: Docstring
         """
 
-        # Starting the counter
-        # clock = Clocker()
-        # clock.start_count()
         for dataset in self.experimental_settings['dataset']:
             # # Executing the Random Search
             search_instance = ManualConformityAlgorithmSearch(
@@ -94,17 +89,7 @@ class PierreStep2(Step):
                 search_instance.run(
                     conformity_str=algorithm
                 )
-        #
-        # Finishing the counter
-        # clock.finish_count()
-        # #
-        # # Saving execution time
-        # SaveAndLoad.save_search_conformity_time(
-        #     data=clock.clock_data(),
-        #     dataset=self.experimental_settings['dataset'],
-        #     algorithm=self.experimental_settings['cluster'],
-        #     distribution=self.experimental_settings['distribution']
-        # )
+
 
     # ############################################################################################ #
     #  ############################ Recommender Algorithm Optimization ########################### #

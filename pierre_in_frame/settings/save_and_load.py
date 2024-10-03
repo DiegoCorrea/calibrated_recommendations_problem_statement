@@ -56,6 +56,7 @@ class SaveAndLoad:
             PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, based_on,
             "trial-" + str(trial), "fold-" + str(fold)
         ])
+        print(clean_dataset_dir)
         return read_csv(os.path.join(clean_dataset_dir, PathDirFile.TRAIN_FILE))
 
     @staticmethod
@@ -309,33 +310,12 @@ class SaveAndLoad:
         data.to_csv(path, index=False, mode='w+')
 
     # ########################################################################################### #
-    # [STEP 5] Metrics step methods - Time
-    # ########################################################################################### #
-    @staticmethod
-    def save_conformity_metric_time(
-            data: DataFrame,
-            cluster: str, recommender: str, dataset: str, trial: int, fold: int,
-            distribution: str, fairness: str, relevance: str, weight: str,
-            tradeoff: str, selector: str
-    ):
-        """
-        TODO: Docstring
-        """
-        data.to_csv(
-            PathDirFile.set_conformity_metrics_time_file(
-                recommender=recommender, dataset=dataset, trial=trial, fold=fold,
-                distribution=distribution, fairness=fairness, relevance=relevance,
-                tradeoff_weight=weight, tradeoff=tradeoff, select_item=selector, cluster=cluster
-            ),
-            index=False
-        )
-
-    # ########################################################################################### #
     # [STEP 5] Metrics step methods - Conformity Evaluation
     # ########################################################################################### #
     @staticmethod
     def save_conformity_metric(
         data: DataFrame,
+        experiment_name: str, based_on: str,
         cluster: str, metric: str, recommender: str, dataset: str, trial: int, fold: int,
         distribution: str, fairness: str, relevance: str, weight: str, tradeoff: str, selector: str
     ):
@@ -344,6 +324,7 @@ class SaveAndLoad:
         """
         data.to_csv(
             PathDirFile.set_conformity_metric_fold_file_by_name(
+                experiment_name=experiment_name, based_on=based_on,
                 recommender=recommender, dataset=dataset, trial=trial, fold=fold,
                 distribution=distribution, fairness=fairness, relevance=relevance,
                 tradeoff_weight=weight, tradeoff=tradeoff, select_item=selector,
@@ -354,6 +335,7 @@ class SaveAndLoad:
 
     @staticmethod
     def load_conformity_metric(
+        experiment_name: str, based_on: str,
         cluster: str, metric: str, recommender: str, dataset: str, trial: int, fold: int,
         distribution: str, fairness: str, relevance: str, weight: str, tradeoff: str, selector: str,
         ext: str = 'csv'
@@ -362,6 +344,7 @@ class SaveAndLoad:
         TODO: Docstring
         """
         path = PathDirFile.get_conformity_metric_fold_file_by_name(
+            experiment_name=experiment_name, based_on=based_on,
             recommender=recommender, dataset=dataset, trial=trial, fold=fold,
             distribution=distribution, fairness=fairness, relevance=relevance,
             tradeoff_weight=weight, tradeoff=tradeoff, select_item=selector,
@@ -374,7 +357,7 @@ class SaveAndLoad:
     # ########################################################################################### #
     @staticmethod
     def save_recommender_metric(
-        data: DataFrame,
+        data: DataFrame, experiment_name: str, based_on: str,
         metric: str, recommender: str, dataset: str, trial: int, fold: int,
         distribution: str, fairness: str, relevance: str, weight: str, tradeoff: str, selector: str
     ):
@@ -383,6 +366,7 @@ class SaveAndLoad:
         """
         data.to_csv(
             PathDirFile.set_recommender_metric_fold_file(
+                experiment_name=experiment_name, based_on=based_on,
                 recommender=recommender, dataset=dataset, trial=trial, fold=fold,
                 distribution=distribution, fairness=fairness, relevance=relevance,
                 tradeoff_weight=weight, tradeoff=tradeoff, select_item=selector,
@@ -393,6 +377,7 @@ class SaveAndLoad:
 
     @staticmethod
     def load_recommender_metric(
+        experiment_name: str, based_on: str,
         metric: str, recommender: str, dataset: str, trial: int, fold: int,
         distribution: str, fairness: str, relevance: str, weight: str, tradeoff: str, selector: str,
         ext: str = 'csv'
@@ -401,6 +386,7 @@ class SaveAndLoad:
         TODO: Docstring
         """
         path = PathDirFile.get_recommender_metric_fold_file(
+            experiment_name=experiment_name, based_on=based_on,
             recommender=recommender, dataset=dataset, trial=trial, fold=fold,
             distribution=distribution, fairness=fairness, relevance=relevance,
             tradeoff_weight=weight, tradeoff=tradeoff, select_item=selector,

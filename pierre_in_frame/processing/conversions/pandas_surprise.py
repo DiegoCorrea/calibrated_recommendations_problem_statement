@@ -37,15 +37,21 @@ class PandasSurprise:
 
     @staticmethod
     def __paralleling_convert(user: tuple, n: int) -> pd.DataFrame:
-        top_n_df = pd.DataFrame()
         uid, user_ratings = user
         user_ratings.sort(key=lambda x: x[1], reverse=True)
-        for iid, est, true_r in user_ratings[:n]:
-            top_n_df = pd.concat([top_n_df,
-                                  pd.DataFrame(data=[[uid, iid, est]],
-                                               columns=[Label.USER_ID, Label.ITEM_ID, Label.TRANSACTION_VALUE])
-                                  ])
-        return top_n_df
+        rec_list = [
+            pd.DataFrame(data=[[uid, iid, est]], columns=[Label.USER_ID, Label.ITEM_ID, Label.TRANSACTION_VALUE])
+            for iid, est, true_r in user_ratings[:n]
+        ]
+        # for iid, est, true_r in user_ratings[:n]:
+            # top_n_df = pd.concat([top_n_df,
+            #                       pd.DataFrame(data=[[uid, iid, est]],
+            #                                    columns=[Label.USER_ID, Label.ITEM_ID, Label.TRANSACTION_VALUE])
+            #                       ])
+            # rec_list.append(
+            #     pd.DataFrame(data=[[uid, iid, est]], columns=[Label.USER_ID, Label.ITEM_ID, Label.TRANSACTION_VALUE])
+            # )
+        return pd.concat(rec_list)
 
     @staticmethod
     def surprise_to_pandas_get_candidates_items(predictions: Dataset,
@@ -67,3 +73,50 @@ class PandasSurprise:
             top_n[uid].append((iid, est, true_r))
         map_results_df = [PandasSurprise.__paralleling_convert(user, n) for user in top_n.items()]
         return pd.concat(map_results_df, sort=False)
+
+    @staticmethod
+    def surprise_to_pandas_get_candidates_items_optimized(
+            predictions: Dataset, n: int = Constants.CANDIDATES_LIST_SIZE) -> pd.DataFrame:
+        """Return the top-N recommendation for each user from a set of predictions.
+
+        Args:
+            predictions(list of Prediction objects): The list of predictions, as
+                returned by the test method of an algorithm.
+            n(int): The number of recommendation to output for each user. Default
+                is 10.
+
+        Returns:
+        A pandas dataframe with the top n items.
+        """
+        # First, map the predictions to each user.
+        rec_list = [
+            pd.DataFrame(data=[[uid, iid, est]], columns=[Label.USER_ID, Label.ITEM_ID, Label.TRANSACTION_VALUE])
+            for uid, iid, true_r, est, _ in predictions
+        ]
+        return pd.concat(rec_list, sort=False).sort_values(by=Label.TRANSACTION_VALUE, ascending=False).iloc[:n]
+
+    @staticmethod
+    def surprise_to_pandas_batch_get_candidates_items_optimized(
+            predictions: Dataset, n: int = Constants.CANDIDATES_LIST_SIZE) -> pd.DataFrame:
+        """Return the top-N recommendation for each user from a set of predictions.
+
+        Args:
+            predictions(list of Prediction objects): The list of predictions, as
+                returned by the test method of an algorithm.
+            n(int): The number of recommendation to output for each user. Default
+                is 10.
+
+        Returns:
+        A pandas dataframe with the top n items.
+        """
+        # First, map the predictions to each user.
+        # print(predictions[0])
+        rec_list = [
+            pd.DataFrame(data=[[uid, iid, est]], columns=[Label.USER_ID, Label.ITEM_ID, Label.TRANSACTION_VALUE])
+            for uid, iid, true_r, est, _ in predictions
+        ]
+        concatened = [
+            df.sort_values(by=Label.TRANSACTION_VALUE, ascending=False).iloc[:n]
+            for user_id, df in pd.concat(rec_list, sort=False).groupby(by=[Label.USER_ID])
+        ]
+        return pd.concat(concatened)

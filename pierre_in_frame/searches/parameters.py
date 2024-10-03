@@ -2,11 +2,11 @@ from scipy.stats import randint, uniform
 
 
 class SurpriseParams:
-    size = 10
+    size = 50
     # 1: User KNN
     USER_KNN_SEARCH_PARAMS = {
         "k": randint(3, 203).rvs(size=size),
-        "sim_options": {'name': ['pearson', 'cosine', 'msd'], 'user_based': [True]}
+        "sim_options": {'name': 'cosine', 'user_based': True}
     }
     # 2: Item KNN
     ITEM_KNN_SEARCH_PARAMS = {

@@ -12,7 +12,6 @@ from scikit_pierre.metrics.evaluation import (
     IntraListSimilarity, Personalization, Coverage, Novelty
 )
 
-from settings.path_dir_file import PathDirFile
 from settings.save_and_load import SaveAndLoad
 
 logger = logging.getLogger(__name__)
@@ -77,7 +76,8 @@ class ApplyingMetric:
         self.users_rec_list_df = SaveAndLoad.load_recommendation_lists(
             recommender=self.recommender, dataset=self.dataset, trial=self.trial, fold=self.fold,
             distribution=self.distribution, fairness=self.fairness, relevance=self.relevance,
-            tradeoff_weight=self.weight, tradeoff=self.tradeoff, select_item=self.selector
+            tradeoff_weight=self.weight, tradeoff=self.tradeoff, select_item=self.selector,
+            experiment_name=self.experiment_name, based_on=self.based_on
         )
 
     def load_rec_baseline(self):
@@ -88,7 +88,8 @@ class ApplyingMetric:
             self.users_baseline_df = SaveAndLoad.load_recommendation_lists(
                 recommender=self.recommender, dataset=self.dataset, trial=self.trial, fold=self.fold,
                 distribution=self.distribution, fairness=self.fairness, relevance=self.relevance,
-                tradeoff_weight="C@0.0", tradeoff=self.tradeoff, select_item=self.selector
+                tradeoff_weight="C@0.0", tradeoff=self.tradeoff, select_item=self.selector,
+            experiment_name=self.experiment_name, based_on=self.based_on
             )
 
     def load_items_set(self):
@@ -113,7 +114,8 @@ class ApplyingMetric:
 
         """
         self.users_cand_items_df = SaveAndLoad.load_candidate_items(
-            algorithm=self.recommender, dataset=self.dataset, trial=self.trial, fold=self.fold
+            algorithm=self.recommender, dataset=self.dataset, trial=self.trial, fold=self.fold,
+            experiment_name=self.experiment_name, based_on=self.based_on
         )
 
     def load_test_set(self):
@@ -126,13 +128,19 @@ class ApplyingMetric:
 
         """
         self.dataset_instance = RegisteredDataset.load_dataset(self.dataset)
+        self.dataset_instance.set_environment(
+            experiment_name=self.experiment_name,
+            based_on=self.based_on
+        )
+
 
     def load_user_prof_distribution(self):
         try:
             if self.target_dist is None:
                 target_dist = SaveAndLoad.load_user_preference_distribution(
                     dataset=self.dataset, fold=self.fold, trial=self.trial,
-                    distribution=self.distribution
+                    distribution=self.distribution,
+                    experiment_name=self.experiment_name, based_on=self.based_on
                 )
                 self.target_dist = target_dist.to_dict('index')
         except IOError or FileNotFoundError as e:
@@ -287,7 +295,8 @@ class ApplyingMetric:
             data=results, metric=self.metric,
             recommender=self.recommender, dataset=self.dataset, trial=self.trial, fold=self.fold,
             distribution=self.distribution, fairness=self.fairness, relevance=self.relevance,
-            weight=self.weight, tradeoff=self.tradeoff, selector=self.selector
+            weight=self.weight, tradeoff=self.tradeoff, selector=self.selector,
+            experiment_name=self.experiment_name, based_on=self.based_on
         )
 
     def verifying_checkpoint(self):
@@ -298,33 +307,9 @@ class ApplyingMetric:
                 metric=self.metric, recommender=self.recommender,
                 distribution=self.distribution, fairness=self.fairness,
                 relevance=self.relevance,
-                weight=self.weight, tradeoff=self.tradeoff, selector=self.selector
+                weight=self.weight, tradeoff=self.tradeoff, selector=self.selector,
+                experiment_name=self.experiment_name, based_on=self.based_on
             )
         ):
             return True
         return False
-
-
-def execution_time_fold(
-        recommender: str, dataset: str, trial: int, fold: int,
-        distribution: str, fairness: str, relevance: str, weight: str, tradeoff: str, selector: str,
-        checkpoint: str
-):
-    path = PathDirFile.get_postprocessing_time_file(
-        dataset=dataset, recommender=recommender, trial=trial, fold=fold,
-        tradeoff=tradeoff, distribution=distribution, fairness=fairness,
-        relevance=relevance, tradeoff_weight=weight, select_item=selector)
-    execution_time_df = pd.read_csv(path)
-    time_values = execution_time_df['finished_at'] - execution_time_df['stated_at']
-
-    results = pd.DataFrame([[
-        time_values
-    ]], columns=['TIME'])
-
-    SaveAndLoad.save_recommender_metric(
-        data=results, metric="TIME",
-        recommender=recommender, dataset=dataset, trial=trial, fold=fold,
-        distribution=distribution, fairness=fairness, relevance=relevance,
-        weight=weight, tradeoff=tradeoff, selector=selector
-    )
-    return "Finished"

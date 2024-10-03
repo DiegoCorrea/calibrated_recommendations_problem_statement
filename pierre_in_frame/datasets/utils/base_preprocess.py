@@ -207,8 +207,7 @@ class Dataset:
         :return: A pandas Dataframe with the train transactions.
         """
         # If it is the first requisition, load from the file
-        if self.train_transaction is None:
-            self.load_train_transactions(trial=trial, fold=fold)
+        self.load_train_transactions(trial=trial, fold=fold)
         return self.train_transaction
 
     def load_validation_transactions(self, trial: int, fold: int):
@@ -231,8 +230,7 @@ class Dataset:
         :return: A pandas Dataframe with the train transactions.
         """
         # If it is the first requisition, load from the file
-        if self.validation_transaction is None:
-            self.load_validation_transactions(trial=trial, fold=fold)
+        self.load_validation_transactions(trial=trial, fold=fold)
         return self.validation_transaction
 
     def load_test_transactions(self, trial: int, fold: int):
@@ -255,8 +253,7 @@ class Dataset:
         :return: A pandas Dataframe with the test transactions.
         """
         # If it is the first requisition, load from the file
-        if self.test_transaction is None:
-            self.load_test_transactions(trial, fold)
+        self.load_test_transactions(trial, fold)
         return self.test_transaction
 
     # ######################################### #
@@ -277,8 +274,7 @@ class Dataset:
         :return: A pandas Dataframe with the dataset raw items.
         """
         # If it is the first requisition, load from the file
-        if self.raw_items is None:
-            self.load_raw_items()
+        self.load_raw_items()
         return self.raw_items
 
     # CLEAN
@@ -289,9 +285,7 @@ class Dataset:
         """
         pass
 
-    def load_clean_items(
-            self
-    ):
+    def load_clean_items(self):
         """
         Load clean items into the instance.
         """
@@ -313,8 +307,7 @@ class Dataset:
         :return: A pandas Dataframe with the dataset clean items.
         """
         # If is the first requisition, load from the file
-        if self.items is None:
-            self.load_clean_items()
+        self.load_clean_items()
         return self.items
 
     def set_items(self, new_items: pd.DataFrame):

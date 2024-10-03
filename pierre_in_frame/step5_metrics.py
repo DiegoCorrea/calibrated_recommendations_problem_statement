@@ -4,13 +4,10 @@ import multiprocessing
 from joblib import Parallel, delayed
 
 from checkpoint_verification import CheckpointVerification
-from evaluations import evaluation_interface
 from evaluations.conformity_algorithms import ConformityAlgorithms
 from evaluations.evaluation_interface import ApplyingMetric
 from settings.labels import Label
 from settings.path_dir_file import PathDirFile
-from settings.save_and_load import SaveAndLoad
-from utils.clocker import Clocker
 from utils.input import Input
 from utils.logging_settings import setup_logging
 from utils.step import Step
@@ -85,12 +82,6 @@ def applying_evaluation_metrics(
             instance.load_personalization()
         elif m == Label.NOVELTY:
             instance.load_novelty()
-        elif m == "TIME":
-            evaluation_interface.execution_time_fold(
-                recommender=recommender, dataset=dataset, trial=trial, fold=fold,
-                distribution=distribution, fairness=fairness, relevance=relevance,
-                weight=weight, tradeoff=tradeoff, selector=selector, checkpoint=checkpoint
-            )
         else:
             continue
 
@@ -98,7 +89,7 @@ def applying_evaluation_metrics(
 
 
 def starting_cluster(
-        cluster: str, recommender: str, dataset: str, trial: int, fold: int,
+        cluster: str, experiment_name: str, based_on: str, recommender: str, dataset: str, trial: int, fold: int,
         distribution: str, fairness: str, relevance: str, weight: str, tradeoff: str, selector: str,
         checkpoint: str
 ):
@@ -120,14 +111,11 @@ def starting_cluster(
             dataset=dataset, trial=trial, fold=fold,
             cluster=cluster, metric=Label.JACCARD_SCORE, recommender=recommender,
             distribution=distribution, fairness=fairness, relevance=relevance,
-            weight=weight, tradeoff=tradeoff, selector=selector
+            weight=weight, tradeoff=tradeoff, selector=selector,
+            experiment_name=experiment_name, based_on=based_on
     ):
         logger.info(">> Already Done... " + system_name)
         return "Already Done"
-
-    clock = Clocker()
-    # Starting the counter
-    clock.start_count()
 
     # Executing the Random Search
     cluster_instance = ConformityAlgorithms(
@@ -141,16 +129,6 @@ def starting_cluster(
 
     cluster_instance.evaluation()
 
-    # Finishing the counter
-    clock.finish_count()
-
-    # Saving execution time
-    SaveAndLoad.save_conformity_metric_time(
-        data=clock.clock_data(), cluster=cluster,
-        recommender=recommender, dataset=dataset, trial=trial, fold=fold,
-        distribution=distribution, fairness=fairness, relevance=relevance,
-        weight=weight, tradeoff=tradeoff, selector=selector
-    )
 
 
 class PierreStep5(Step):
@@ -259,8 +237,7 @@ class PierreStep5(Step):
         """
         combination = [
             self.experimental_settings['cluster'],
-            [self.experimental_settings['experiment_name']], [
-            self.experimental_settings['based_on']],
+            [self.experimental_settings['experiment_name']], [self.experimental_settings['based_on']],
             self.experimental_settings['recommender'], self.experimental_settings['dataset'],
             self.experimental_settings['trial'], self.experimental_settings['fold'],
             self.experimental_settings['distribution'], self.experimental_settings['fairness'],

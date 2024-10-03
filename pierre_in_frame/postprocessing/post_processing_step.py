@@ -58,7 +58,6 @@ class PostProcessingStep:
             self.users_distribution = None
             print("We do not find the preference distribution precomputed."
                   "It will take more time to compute")
-            print(IOError)
 
         # Choice the tradeoff
         if self.tradeoff_component == 'LIN':
