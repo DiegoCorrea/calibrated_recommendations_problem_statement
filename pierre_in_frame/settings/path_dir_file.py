@@ -73,9 +73,57 @@ class PathDirFile:
         return save_in_dir + '/'
 
     @staticmethod
-    def preference_distribution_file(
+    def dataset_path(
+            experiment_name: str, dataset: str, based_on: str, filename: str) -> str:
+        f"""
+        This method is to lead with the distribution file directory.
+
+        :param experiment_name: A string that`s representing the experiment name.
+        :param dataset: A string that's representing the dataset name.
+        :param based_on: A string that`s representing the type of split.
+        :param filename: The distribution filename.
+
+        :return: A string like 
+        data/{experiment_name}/datasets/{dataset}/{based_on}/{filename}
+        """
+        save_in_dir = "/".join([
+            PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, based_on
+        ])
+        if not os.path.exists(save_in_dir):
+            os.makedirs(save_in_dir)
+        return "/".join([save_in_dir, filename])
+
+    @staticmethod
+    def dataset_fold_path(
             experiment_name: str, dataset: str, based_on: str,
-            trial: int, fold: int, filename: str) -> str:
+            trial: int, fold: int, filename: str
+    ) -> str:
+        f"""
+        This method is to lead with the distribution file directory.
+
+        :param experiment_name: A string that`s representing the experiment name.
+        :param dataset: A string that's representing the dataset name.
+        :param based_on: A string that`s representing the type of split.
+        :param trial: The trial number.
+        :param fold: The fold number.
+        :param filename: The distribution filename.
+
+        :return: A string like 
+        data/{experiment_name}/datasets/{dataset}/{based_on}/trial-{trial}/fold-{fold}/{filename}
+        """
+        save_in_dir = "/".join([
+            PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, based_on,
+            'trial-' + str(trial), 'fold-' + str(fold)
+        ])
+        if not os.path.exists(save_in_dir):
+            os.makedirs(save_in_dir)
+        return "/".join([save_in_dir, filename])
+
+    @staticmethod
+    def dataset_distribution_path(
+            experiment_name: str, dataset: str, based_on: str,
+            trial: int, fold: int, filename: str
+    ) -> str:
         f"""
         This method is to lead with the distribution file directory.
 
@@ -707,16 +755,22 @@ class PathDirFile:
         return save_in_dir + '/' + filename
 
     @staticmethod
-    def preprocessing_graphics_file(dataset: str, filename: str) -> str:
-        """
+    def preprocessing_graphics_file(
+            dataset: str, experiment_name: str, based_on: str, filename: str
+    ) -> str:
+        f"""
         Method to get the file path, which deal with the graphics files.
 
+        :param experiment_name: A string that`s representing the experiment name.
         :param dataset: A string that's representing the dataset name.
-        :param filename: A string that's representing the graphic file name.
+        :param based_on: A string that`s representing the type of split.
+        :param filename: The distribution filename.
 
-        :return: A string like results/graphics/preprocessing/{dataset}/{filename}
+        :return: A string like results/{experiment_name}/analyze/{dataset}/{filename}
         """
-        save_in_dir = "/".join([PathDirFile.RESULTS_GRAPHICS_DIR, "preprocessing", dataset])
+        save_in_dir = "/".join([
+            PathDirFile.RESULTS_DIR, experiment_name, dataset, based_on, "dataset_graphics"
+        ])
         if not os.path.exists(save_in_dir):
             os.makedirs(save_in_dir)
         return save_in_dir + '/' + filename

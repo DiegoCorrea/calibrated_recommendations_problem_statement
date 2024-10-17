@@ -12,6 +12,7 @@ from scikit_pierre.models.item import ItemsInMemory
 from settings.labels import Label
 from settings.path_dir_file import PathDirFile
 from settings.save_and_load import SaveAndLoad
+from utils.clocker import Clocker
 from utils.input import Input
 from utils.logging_settings import setup_logging
 from utils.step import Step
@@ -89,9 +90,14 @@ class PierreStep1(Step):
         This method has the function of generating graphics with the dataset analyzes.
         """
         # Loading dataset information
-        dt_chat = DatasetChart(self.experimental_settings['dataset'])
-        dt_chat.item_long_tail()
-        dt_chat.genres()
+        dt_chat = DatasetChart(
+            dataset_name=self.experimental_settings['dataset'],
+            based_on=self.experimental_settings['based_on'],
+            experiment_name=self.experimental_settings['experiment_name']
+        )
+        # dt_chat.item_long_tail()
+        # dt_chat.genres()
+        dt_chat.items_genres_raw_and_clean()
 
     def create_analyzes(self):
         """
@@ -117,6 +123,42 @@ class PierreStep1(Step):
 
         # Save the distributions
         SaveAndLoad.save_dataset_analyze(
+            data=dataset_info_df, dataset=self.experimental_settings['dataset'],
+            experiment_name=self.experimental_settings['experiment_name'],
+            based_on=self.experimental_settings['based_on']
+        )
+
+    def create_folds_analyze(self) -> None:
+
+        """
+        This method is to lead with the dataset numbers.
+        """
+
+        dataset_info_df = []
+        # Load the dataset
+        dataset_instance = RegisteredDataset.load_dataset(
+            dataset=self.experimental_settings['dataset']
+        )
+        dataset_instance.set_environment(
+            experiment_name=self.experimental_settings['experiment_name'],
+            based_on=self.experimental_settings['based_on']
+        )
+        dataset_instance.load_clean_items()
+        for t in self.experimental_settings['trial']:
+            for f in self.experimental_settings['fold']:
+                dataset_instance.set_environment(
+                    experiment_name=self.experimental_settings['experiment_name'],
+                    n_trials=t, n_folds=f, based_on=self.experimental_settings['based_on']
+                )
+                dataset_instance.get_full_train_transactions(trial=t, fold=f)
+                # Print the Clean dataset information
+                dataset_info_df.append(dataset_instance.fold_basic_info())
+
+        dataset_info_df = pd.concat(dataset_info_df)
+        print(dataset_info_df)
+
+        # Save the distributions
+        SaveAndLoad.save_fold_analyze(
             data=dataset_info_df, dataset=self.experimental_settings['dataset'],
             experiment_name=self.experimental_settings['experiment_name'],
             based_on=self.experimental_settings['based_on']
@@ -182,6 +224,9 @@ class PierreStep1(Step):
         """
         This method is to compute the preference distribution.
         """
+        clocker = Clocker()
+        clocker.start_count()
+
         # Load the dataset
         dataset_instance = RegisteredDataset.load_dataset(dataset)
         dataset_instance.set_environment(
@@ -189,18 +234,23 @@ class PierreStep1(Step):
         )
 
         # Get the users' preferences set
-        users_preference_set = dataset_instance.get_full_train_transactions(trial=trial, fold=fold
-        )
+        users_preference_set = dataset_instance.get_full_train_transactions(trial=trial, fold=fold)
 
         data = computer_users_distribution_pandas(
-            users_preference_set=users_preference_set, items_df=dataset_instance.get_items(
-            ), distribution=distribution
+            users_preference_set=users_preference_set, items_df=dataset_instance.get_items(),
+            distribution=distribution
         )
 
         # Save the distributions
         SaveAndLoad.save_user_preference_distribution(
             experiment_name=experiment_name, based_on=based_on,
             data=data, dataset=dataset, fold=fold, trial=trial, distribution=distribution
+        )
+
+        clocker.finish_count()
+        SaveAndLoad.save_distribution_time(
+            experiment_name=experiment_name, based_on=based_on,
+            data=clocker.clock_data(), dataset=dataset, fold=fold, trial=trial, distribution=distribution
         )
 
     def main(self):
@@ -211,6 +261,7 @@ class PierreStep1(Step):
             self.create_charts()
         elif self.experimental_settings['opt'] == Label.DATASET_ANALYZE:
             self.create_analyzes()
+            self.create_folds_analyze()
         elif self.experimental_settings['opt'] == Label.DATASET_DISTRIBUTION:
             self.create_distribution()
         elif self.experimental_settings['opt'] == Label.DATASET_CLASS_ONE_HOT_ENCODE:

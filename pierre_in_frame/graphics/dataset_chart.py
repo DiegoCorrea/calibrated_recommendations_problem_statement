@@ -14,8 +14,14 @@ class DatasetChart:
     This class administrates the dataset chart generation
     """
 
-    def __init__(self, dataset_name):
+    def __init__(self, dataset_name, experiment_name, based_on):
         self.dataset = RegisteredDataset.load_dataset(dataset_name)
+        self.experiment_name = experiment_name
+        self.based_on = based_on
+        self.dataset.set_environment(
+            experiment_name=experiment_name,
+            based_on=based_on
+        )
 
     def item_long_tail(self):
         """
@@ -49,3 +55,34 @@ class DatasetChart:
         items_genre_distr_df = genre_probability_distribution(self.dataset.get_items(), label=Label.ITEM_ID)
 
         GenreChats.compare_genre_distribution_bar(users_genre_distr_df, items_genre_distr_df, self.dataset.dir_name)
+
+    def users_genres_raw_and_clean(self):
+        print("Processing Raw Items")
+        raw_transactions_df = self.dataset.get_raw_transactions().merge(self.dataset.get_raw_items(), on=Label.ITEM_ID)
+        raw_dist_df = genre_probability_distribution(raw_transactions_df, label=Label.USER_ID)
+        raw_dist_df.head(5)
+
+        print("Processing Clean Items")
+        clean_transactions_df = self.dataset.get_transactions().merge(self.dataset.get_items(), on=Label.ITEM_ID)
+        clean_dist_df = genre_probability_distribution(clean_transactions_df, label=Label.USER_ID)
+
+        GenreChats.compare_genre_distribution_bar(
+            distribution1=raw_dist_df, distribution2=clean_dist_df, dataset=self.dataset.dir_name,
+            label1="Raw", label2="Cleaned", ylabel="Total Times",
+            experiment_name=self.experiment_name,
+            based_on=self.based_on
+        )
+
+    def items_genres_raw_and_clean(self):
+        print("Processing Raw Items")
+        raw_dist_df = genre_probability_distribution(self.dataset.get_raw_items(), label=Label.ITEM_ID)
+
+        print("Processing Clean Items")
+        clean_dist_df = genre_probability_distribution(self.dataset.get_items(), label=Label.ITEM_ID)
+
+        GenreChats.compare_genre_distribution_bar(
+            distribution1=raw_dist_df, distribution2=clean_dist_df, dataset=self.dataset.dir_name,
+            label1="Raw", label2="Cleaned", ylabel="Total Times",
+            experiment_name=self.experiment_name,
+            based_on=self.based_on
+        )

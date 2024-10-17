@@ -42,6 +42,10 @@ class SurpriseParams:
 
 class ImplicitParams:
     size = 50
+    # 1: User KNN
+    ITEM_KNN_SEARCH_PARAMS = {
+        "k": randint(3, 203).rvs(size=size)
+    }
     ALS_PARAMS = {
         "factors": randint(10, 150).rvs(size=size),
         "regularization": uniform(0.0003, 0.1).rvs(size=size),

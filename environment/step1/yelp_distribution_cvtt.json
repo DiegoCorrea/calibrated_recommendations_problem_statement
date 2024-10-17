@@ -1,8 +1,10 @@
 {
   "experiment_name": "COMPARING_MODELS",
-  "dataset": "food",
-  "based_on": "CVTT",
+  "multiprocessing": "starmap",
+  "n_jobs": 3,
   "opt": "DISTRIBUTION",
+  "based_on": "CVTT",
+  "dataset": "yelp",
   "distribution": [
     "CWS",
     "WPS",
@@ -15,7 +17,5 @@
     "TSW_TWB_GLEB_P"
   ],
   "fold": [1, 2, 3],
-  "trial": [1],
-  "multiprocessing": "starmap",
-  "n_jobs": 3
+  "trial": [1]
 }

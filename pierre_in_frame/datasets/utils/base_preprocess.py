@@ -126,8 +126,7 @@ class Dataset:
         :return: A pandas Dataframe with the dataset raw transactions.
         """
         # If it is the first requisition, load from the file
-        if self.raw_transactions is None:
-            self.load_raw_transactions()
+        self.load_raw_transactions()
         return self.raw_transactions
 
     # # CLEAN
@@ -153,8 +152,7 @@ class Dataset:
         :return: A pandas Dataframe with the dataset clean transactions.
         """
         # If it is the first requisition, load from the file
-        if self.transactions is None:
-            self.load_clean_transactions()
+        self.load_clean_transactions()
         return self.transactions
 
     def set_transactions(self, new_transactions: pd.DataFrame):
@@ -175,16 +173,13 @@ class Dataset:
         :return: A pandas Dataframe with the train transactions.
         """
         # If it is the first requisition, load from the file
-        if self.full_train_transaction is None:
-            if self.train_transaction is None:
-                self.load_train_transactions(trial=trial, fold=fold)
+        self.load_train_transactions(trial=trial, fold=fold)
 
-            if self.validation_transaction is None:
-                self.load_validation_transactions(trial=trial, fold=fold)
+        self.load_validation_transactions(trial=trial, fold=fold)
 
-            self.full_train_transaction = pd.concat(
-                [self.train_transaction, self.validation_transaction]
-            )
+        self.full_train_transaction = pd.concat(
+            [self.train_transaction, self.validation_transaction]
+        )
         return self.full_train_transaction
 
     def load_train_transactions(self, trial: int, fold: int):
@@ -289,7 +284,7 @@ class Dataset:
         """
         Load clean items into the instance.
         """
-        self.items = SaveAndLoad.save_clean_items(
+        self.items = SaveAndLoad.load_clean_items(
             experiment_name=self.experiment_name,
             dataset=self.get_dataset_name(), based_on=self.based_on
         )
@@ -756,5 +751,40 @@ class Dataset:
             columns=[
                 'Dataset', 'Users', 'Items', 'Transactions', 'Classes',
                 "Users_trans_mean", "Users_trans_median", "mean_count_plays", "median_count_plays", "Minimum", "Maximum"
+            ]
+        )
+
+    def fold_basic_info(self):
+        """
+        This method is to print the cleaned dataset information
+        """
+
+        total_of_users = len(self.full_train_transaction[Label.USER_ID].unique())
+
+        count_user_trans = Counter(self.full_train_transaction[Label.USER_ID].tolist())
+        mean_user_transactions = round(mean(list(count_user_trans.values())), 3)
+        median_user_transactions = median(list(count_user_trans.values()))
+        min_user_transactions = min(list(count_user_trans.values()))
+        max_user_transactions = max(list(count_user_trans.values()))
+
+        unique_items_ids = self.full_train_transaction[Label.ITEM_ID].unique().tolist()
+        total_of_items = len(unique_items_ids)
+        total_of_transactions = len(self.full_train_transaction)
+        genre_list = self.items[self.items[Label.ITEM_ID].isin(unique_items_ids)][Label.GENRES].tolist()
+        # print(genre_list)
+        total_of_classes = len(
+            set(list(itertools.chain.from_iterable(
+                list(map(Dataset.classes, genre_list))
+            )))
+        )
+        return pd.DataFrame(
+            data=[[
+                self.n_trials, self.n_folds, total_of_users, total_of_items, total_of_transactions,
+                total_of_classes,
+                mean_user_transactions, median_user_transactions, min_user_transactions, max_user_transactions
+            ]],
+            columns=[
+                'Trial', 'Fold', 'Users', 'Items', 'Transactions',
+                'Classes', "Users_trans_mean", "Users_trans_median", "Minimum", "Maximum"
             ]
         )

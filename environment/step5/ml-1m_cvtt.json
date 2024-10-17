@@ -9,7 +9,7 @@
     "MACE",
     "MAP"
   ],
-  "recommender": ["ALS", "BPR"],
+  "recommender": ["BPR", "ALS", "ITEMKNN", "SVD", "POPULARITY_REC"],
   "dataset": ["ml-1m"],
   "fold": [1, 2, 3],
   "trial": [1],

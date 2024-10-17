@@ -1,5 +1,4 @@
 import json
-import os
 
 from pandas import DataFrame, read_csv
 
@@ -37,59 +36,56 @@ class SaveAndLoad:
 
     @staticmethod
     def load_clean_transactions(experiment_name: str, dataset: str, based_on: str):
-        clean_dataset_dir = "/".join(
-            [PathDirFile.DATA_DIR, experiment_name,
-             "datasets", dataset, based_on]
+        directory_name = PathDirFile.dataset_path(
+            dataset=dataset, experiment_name=experiment_name, based_on=based_on,
+            filename=PathDirFile.TRANSACTIONS_FILE
         )
-        transactions = read_csv(
-            os.path.join(clean_dataset_dir, PathDirFile.TRANSACTIONS_FILE)
-        )
-        return transactions.astype({
-            Label.USER_ID: 'str',
-            Label.ITEM_ID: 'str'
-        })
+        data = read_csv(directory_name)
+        print(directory_name)
+        return data
 
     @staticmethod
-    def load_train_transactions(
-            experiment_name: str, dataset: str, based_on: str, trial: int, fold: int):
-        clean_dataset_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, based_on,
-            "trial-" + str(trial), "fold-" + str(fold)
-        ])
-        print(clean_dataset_dir)
-        return read_csv(os.path.join(clean_dataset_dir, PathDirFile.TRAIN_FILE))
-
-    @staticmethod
-    def load_validation_transactions(
-            experiment_name: str, dataset: str, based_on: str, trial: int, fold: int):
-        clean_dataset_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, based_on,
-            "trial-" + str(trial), "fold-" + str(fold)
-        ])
-        return read_csv(os.path.join(clean_dataset_dir, PathDirFile.VALIDATION_FILE))
-
-    @staticmethod
-    def load_test_transactions(
-            experiment_name: str, dataset: str, based_on: str, trial: int, fold: int):
-        clean_dataset_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, based_on,
-            "trial-" + str(trial), "fold-" + str(fold)
-        ])
-        return read_csv(os.path.join(clean_dataset_dir, PathDirFile.TEST_FILE))
-
-    @staticmethod
-    def save_clean_items(
-            experiment_name: str, dataset: str, based_on: str):
-        clean_dataset_dir = "/".join(
-            [PathDirFile.DATA_DIR, experiment_name,
-             "datasets", dataset, based_on]
+    def load_train_transactions(experiment_name: str, dataset: str, based_on: str, trial: int, fold: int):
+        directory_name = PathDirFile.dataset_fold_path(
+            dataset=dataset, experiment_name=experiment_name, based_on=based_on,
+            trial=trial, fold=fold,
+            filename=PathDirFile.TRAIN_FILE
         )
-        items = read_csv(
-            os.path.join(clean_dataset_dir, PathDirFile.ITEMS_FILE)
+        print(directory_name)
+        data = read_csv(directory_name)
+        return data
+
+    @staticmethod
+    def load_validation_transactions(experiment_name: str, dataset: str, based_on: str, trial: int, fold: int):
+        directory_name = PathDirFile.dataset_fold_path(
+            dataset=dataset, experiment_name=experiment_name, based_on=based_on,
+            trial=trial, fold=fold,
+            filename=PathDirFile.VALIDATION_FILE
         )
-        return items.astype({
-            Label.ITEM_ID: 'str'
-        })
+        print(directory_name)
+        data = read_csv(directory_name)
+        return data
+
+    @staticmethod
+    def load_test_transactions(experiment_name: str, dataset: str, based_on: str, trial: int, fold: int):
+        directory_name = PathDirFile.dataset_fold_path(
+            dataset=dataset, experiment_name=experiment_name, based_on=based_on,
+            trial=trial, fold=fold,
+            filename=PathDirFile.TEST_FILE
+        )
+        print(directory_name)
+        data = read_csv(directory_name)
+        return data
+
+    @staticmethod
+    def load_clean_items(experiment_name: str, dataset: str, based_on: str):
+        directory_name = PathDirFile.dataset_path(
+            dataset=dataset, experiment_name=experiment_name, based_on=based_on,
+            filename=PathDirFile.ITEMS_FILE
+        )
+        print(directory_name)
+        data = read_csv(directory_name)
+        return data
 
     # ########################################################################################### #
 
@@ -102,9 +98,10 @@ class SaveAndLoad:
         This method is to save the distribution file.
         """
         data.to_csv(
-            PathDirFile.preference_distribution_file(
+            PathDirFile.dataset_distribution_path(
                 dataset=dataset, experiment_name=experiment_name, based_on=based_on,
-                fold=fold, trial=trial, filename=distribution + '.' + ext
+                fold=fold, trial=trial,
+                filename=distribution + '.' + ext
             )
         )
 
@@ -116,11 +113,28 @@ class SaveAndLoad:
         """
         This method is to load the distribution file.
         """
-        preference_distribution_path = PathDirFile.preference_distribution_file(
+        preference_distribution_path = PathDirFile.dataset_distribution_path(
             dataset=dataset, experiment_name=experiment_name, based_on=based_on,
-            fold=fold, trial=trial, filename=distribution + '.' + ext
+            fold=fold, trial=trial,
+            filename=distribution + '.' + ext
         )
         return read_csv(preference_distribution_path, index_col=0).fillna(0)
+
+    @staticmethod
+    def save_distribution_time(
+            data: DataFrame, experiment_name: str, dataset: str, based_on: str,
+            trial: int, fold: int, distribution: str, ext: str = 'csv'
+    ):
+        """
+        This method is to save the distribution file.
+        """
+        data.to_csv(
+            PathDirFile.dataset_distribution_path(
+                dataset=dataset, experiment_name=experiment_name, based_on=based_on,
+                fold=fold, trial=trial,
+                filename=distribution + "_" + "TIME"  + '.' + ext
+            )
+        )
 
     # ########################################################################################### #
 
@@ -132,7 +146,7 @@ class SaveAndLoad:
         This method is to save the item one hot encode file.
         """
         data.to_csv(
-            PathDirFile.item_class_one_hot_encode_file(
+            PathDirFile.dataset_path(
                 dataset=dataset, experiment_name=experiment_name, based_on=based_on,
                 filename="item_one_hot_encode" + '.' + ext
             ), mode='w+'
@@ -145,7 +159,7 @@ class SaveAndLoad:
         """
         This method is to load the one hot encode file.
         """
-        preference_distribution_path = PathDirFile.item_class_one_hot_encode_file(
+        preference_distribution_path = PathDirFile.dataset_path(
             dataset=dataset, experiment_name=experiment_name, based_on=based_on,
             filename="item_one_hot_encode" + '.' + ext
         )
@@ -161,9 +175,23 @@ class SaveAndLoad:
         This method is to save the distribution file.
         """
         data.to_csv(
-            PathDirFile.dataset_analyze_file(
+            PathDirFile.dataset_path(
                 dataset=dataset, experiment_name=experiment_name, based_on=based_on,
-                filename="general" + '.' + ext
+                filename="GENERAL_ANALYZE" + '.' + ext
+            ), index=False, mode='w+'
+        )
+
+    @staticmethod
+    def save_fold_analyze(
+            data: DataFrame, experiment_name: str, dataset: str, based_on: str, ext: str = 'csv'
+    ):
+        """
+        This method is to save the folds analyze file.
+        """
+        data.to_csv(
+            PathDirFile.dataset_path(
+                dataset=dataset, experiment_name=experiment_name, based_on=based_on,
+                filename="FOLDS_ANALYZE" + '.' + ext
             ), index=False, mode='w+'
         )
 

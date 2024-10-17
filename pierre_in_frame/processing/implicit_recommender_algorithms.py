@@ -3,6 +3,7 @@ import scipy.sparse as sparse
 
 import pandas as pd
 import implicit
+import threadpoolctl
 
 from datasets.registred_datasets import RegisteredDataset
 from settings.labels import Label
@@ -40,6 +41,9 @@ class ImplicitRecommenderAlgorithm:
         self.list_size = list_size
         self.based_on = based_on
         self.experiment_name = experiment_name
+        global OPENBLAS_NUM_THREADS
+        OPENBLAS_NUM_THREADS = 1
+        threadpoolctl.threadpool_limits(1, "blas")
 
         # Load the surprise recommender algorithm
         full_params = SaveAndLoad.load_hyperparameters_recommender(
@@ -61,6 +65,10 @@ class ImplicitRecommenderAlgorithm:
                 learning_rate=full_params["params"]["learning_rate"],
                 iterations=full_params["params"]["iterations"],
                 random_state=full_params["params"]["random_state"], num_threads=1
+            )
+        elif self.recommender_name == Label.ITEMKNN:
+            self.recommender = implicit.nearest_neighbours.CosineRecommender(
+                K=full_params["params"]["K"]
             )
         elif self.recommender_name == Label.LMF:
             pass

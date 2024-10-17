@@ -1,10 +1,12 @@
 import logging
+from math import ceil
 
 import pandas as pd
 from surprise import SVD, NMF, KNNBasic
 from surprise.prediction_algorithms.co_clustering import CoClustering
 from surprise.prediction_algorithms.matrix_factorization import SVDpp
 from surprise.prediction_algorithms.slope_one import SlopeOne
+from tqdm import tqdm
 
 from datasets.registred_datasets import RegisteredDataset
 from processing.conversions.pandas_surprise import PandasSurprise
@@ -53,7 +55,7 @@ class SurpriseRecommenderAlgorithm:
                 experiment_name=self.experiment_name, based_on=self.based_on,
                 dataset=self.dataset.system_name, algorithm=self.recommender_name
             )
-            params = full_params[metric]
+            params = full_params["params"]
             if self.recommender_name == Label.SVD:
                 self.recommender = SVD(
                     n_factors=params['n_factors'], n_epochs=params['n_epochs'],
@@ -90,32 +92,84 @@ class SurpriseRecommenderAlgorithm:
                     random_state=42, verbose=True
                 )
 
-    def _user_unknown_items(self, users_preferences: pd.DataFrame, user_id: str) -> pd.DataFrame:
+    @staticmethod
+    def _all_single_user_unknown_items(all_items_ids: list, user_pref: pd.DataFrame) -> list:
         """
         TODO: Docstring
         """
-        user_unknown_items_ids = set(
-            self.all_items_ids) - set(users_preferences['ITEM_ID'].unique().tolist())
-        unk_df = pd.DataFrame()
-        unk_df[Label.ITEM_ID] = list(user_unknown_items_ids)
-        unk_df[Label.USER_ID] = user_id
-        unk_df[Label.TRANSACTION_VALUE] = 0
-        return unk_df
+        set1 = set(all_items_ids)
+        set2 = set(list(user_pref[Label.ITEM_ID].astype('int').unique()))
+        unk_items_list = list(set1 - set2)
+        return unk_items_list
 
-    def __predict(self, user_test_set: pd.DataFrame) -> pd.DataFrame:
+    @staticmethod
+    def __predict_unit(recommender, user_id, user_unknown_items_ids: list, list_size: int) -> pd.DataFrame:
         """
         Method to predict the rating to a user.
 
         :param user_test_set: A Pandas Dataframe with the user_id and item_id.
         :return: A Pandas Dataframe with the user_id, item_id and predicted_rating.
         """
-        # Transform the pandas dataframe in a surprise dataset structure
-        testset = PandasSurprise.pandas_transform_testset_to_surprise(testset_df=user_test_set)
-        # Predict and transform surprise dataset structure in a pandas dataframe
-        return PandasSurprise.surprise_to_pandas_get_candidates_items(
-            predictions=self.recommender.test(testset=testset),
-            n=self.list_size
+
+        predictions = [
+            recommender.predict(user_id, iid)
+            for iid in user_unknown_items_ids
+        ]
+        predictions = pd.DataFrame(predictions)
+        predictions = predictions.rename(
+            index=str, columns={"uid": Label.USER_ID, "iid": Label.ITEM_ID, "est": Label.TRANSACTION_VALUE}
         )
+        # print(predictions)
+        return predictions.drop(
+            ["details", "r_ui"], axis="columns"
+        ).sort_values(
+            by=Label.TRANSACTION_VALUE, ascending=False
+        ).iloc[:list_size]
+
+    @staticmethod
+    def __make_batch_recommendation__(
+            user_list, all_items_ids, recommender, list_size, progress
+    ):
+        # Predict the recommendation list
+        result_list = [SurpriseRecommenderAlgorithm.__predict_unit(
+            user_unknown_items_ids=SurpriseRecommenderAlgorithm._all_single_user_unknown_items(
+                user_pref=df,
+                all_items_ids=all_items_ids
+            ),
+            list_size=list_size,
+            recommender=recommender,
+            user_id=user_id[0]
+        ) for user_id, df in user_list]
+        progress.update(len(user_list))
+        progress.set_description("Recommendation: ")
+
+        return result_list
+
+    @staticmethod
+    def __run__(recommender, users_preferences, list_size, item_df):
+        """
+        Method to run the recommender algorithm, made and save the recommendation list
+        """
+
+        # Load test data
+        all_items_ids = item_df[Label.ITEM_ID].astype('int').unique().tolist()
+        df_grouped = list(users_preferences.groupby([Label.USER_ID]))
+
+        progress = tqdm(total=len(df_grouped))
+        loops = int(ceil(len(df_grouped)/100))
+
+        user_preds = [pd.concat(
+            SurpriseRecommenderAlgorithm.__make_batch_recommendation__(
+                user_list=df_grouped[i * 100: (i + 1) * 100],
+                all_items_ids=all_items_ids,
+                recommender=recommender,
+                list_size=list_size,
+                progress=progress,
+                # validation=validation
+            )
+        ) for i in range(0, loops)]
+        progress.close()
+        return pd.concat(user_preds)
 
     def run(self):
         """
@@ -143,23 +197,19 @@ class SurpriseRecommenderAlgorithm:
         logger.info(">>> Get the test set")
         self.all_items = self.dataset.get_items()
         self.all_items_ids = self.all_items['ITEM_ID'].unique().tolist()
-        user_list = users_preferences[Label.USER_ID].unique()
 
         # Predict the recommendation list
         logger.info(">>> Predicting...")
-        result_list = [self.__predict(
-            user_test_set=self._user_unknown_items(
-                users_preferences[users_preferences[Label.USER_ID] == user_id],
-                user_id=user_id
-            )
-        ) for user_id in user_list]
-        merged_results_df = pd.concat(result_list)
+        result_list = SurpriseRecommenderAlgorithm.__run__(
+            recommender=self.recommender, users_preferences=users_preferences,
+            list_size=self.list_size, item_df=self.all_items
+        )
 
         # Save all recommendation lists
         logger.info(">>> Saving...")
         SaveAndLoad.save_candidate_items(
             experiment_name=self.experiment_name, based_on=self.based_on,
-            data=merged_results_df,
+            data=result_list,
             dataset=self.dataset.system_name, algorithm=self.recommender_name,
             fold=self.fold, trial=self.trial
         )

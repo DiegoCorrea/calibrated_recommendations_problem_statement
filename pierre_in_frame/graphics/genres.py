@@ -56,14 +56,22 @@ class GenreChats:
         plt.close('all')
 
     @staticmethod
-    def compare_genre_distribution_bar(users_genre_distr_df, items_genre_distr_df, dataset: str):
-        users_genre_distr_df = users_genre_distr_df.reindex(sorted(users_genre_distr_df.columns), axis=1)
-        items_genre_distr_df = items_genre_distr_df.reindex(sorted(items_genre_distr_df.columns), axis=1)
-        women_means = users_genre_distr_df.mean(axis=0).tolist()
-        men_means = items_genre_distr_df.mean(axis=0).tolist()
-        users_std = users_genre_distr_df.sem(axis=0).tolist()
-        items_std = items_genre_distr_df.sem(axis=0).tolist()
-        labels = users_genre_distr_df.columns.tolist()
+    def compare_genre_distribution_bar(
+            distribution1, distribution2, dataset: str, 
+            label1: str = 'Users', label2: str = 'Items', ylabel: str = 'Genres',
+            experiment_name: str = "default", based_on: str = None
+    ):
+        distribution1 = distribution1.reindex(sorted(distribution1.columns), axis=1)
+        distribution2 = distribution2.reindex(sorted(distribution2.columns), axis=1)
+        dist1_sum_list = distribution1.sum(axis=0).tolist()
+        dist2_sum_list = distribution2.sum(axis=0).tolist()
+        dist1_sum = sum(dist1_sum_list)
+        dist2_sum = sum(dist2_sum_list)
+        dist1_means = [x/dist1_sum for x in dist1_sum_list]
+        dist2_means = [y/dist2_sum for y in dist2_sum_list]
+        dist1_std = distribution1.sem(axis=0).tolist()
+        dist2_std = distribution2.sem(axis=0).tolist()
+        labels = distribution1.columns.tolist()
 
         x = np.arange(len(labels))  # the label locations
         width = 0.35  # the width of the bars
@@ -71,20 +79,23 @@ class GenreChats:
         fig, ax = plt.subplots()
         plt.rc('xtick', labelsize=16)
         plt.rc('ytick', labelsize=16)
-        rects1 = ax.bar(x - width / 2, men_means, width, label='Items', yerr=items_std)
-        rects2 = ax.bar(x + width / 2, women_means, width, label='Users', yerr=users_std)
+        rects1 = ax.bar(x - width / 2, dist1_means, width, label=label1)
+        rects2 = ax.bar(x + width / 2, dist2_means, width, label=label2)
 
         # Add some text for labels, title and custom x-axis tick labels, etc.
-        ax.set_ylabel('Probability', fontsize=ChartsConfig.FONT_SIZE_VALUE)
-        ax.set_xticks(x)
-        ax.set_xticklabels(labels)
+        ax.set_ylabel(ylabel, fontsize=ChartsConfig.FONT_SIZE_VALUE)
+        # ax.set_xticks(x)
+        # ax.set_xticklabels(labels)
         ax.legend()
 
         fig.tight_layout()
 
-        plt.xticks(rotation=90)
+        # plt.xticks(rotation=90)
 
-        saving_file = PathDirFile.preprocessing_graphics_file(dataset, 'compare_genre_distribution_bar.eps')
+        saving_file = PathDirFile.preprocessing_graphics_file(
+            dataset=dataset, experiment_name=experiment_name, based_on=based_on,
+            filename='compare_genre_distribution_bar.eps'
+        )
         # Salvar figura no disco
         plt.savefig(
             saving_file,
@@ -93,7 +104,10 @@ class GenreChats:
             bbox_inches='tight'
         )
 
-        saving_file = PathDirFile.preprocessing_graphics_file(dataset, 'compare_genre_distribution_bar.png')
+        saving_file = PathDirFile.preprocessing_graphics_file(
+            dataset=dataset, experiment_name=experiment_name, based_on=based_on,
+            filename='compare_genre_distribution_bar.png'
+        )
         # Salvar figura no disco
         plt.savefig(
             saving_file,

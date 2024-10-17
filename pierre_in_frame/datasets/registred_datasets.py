@@ -7,6 +7,7 @@ from datasets.taste_profile import TasteProfile
 from datasets.twitter_movies import TwitterMovies
 from datasets.utils.base_preprocess import Dataset
 from datasets.yahoo_movies import YahooMovies
+from datasets.yelp import Yelp
 from settings.labels import Label
 
 
@@ -23,10 +24,12 @@ class RegisteredDataset:
     MY_ANIME_LIST_DATASET = MyAnimeList.system_name
     TWITTER_MOVIES_DATASET = TwitterMovies.system_name
     LASTFM_TWO_BILLION_DATASET = LastFMTwoBillion.system_name
+    YELP_DATASET = Yelp.system_name
 
     # Allowed to be accessed
     DATASET_LIST = [
         MOVIELENS_ONE_MILLION_DATASET, YAHOO_MOVIES_DATASET, TWITTER_MOVIES_DATASET,
+        YELP_DATASET,
         LASTFM_TWO_BILLION_DATASET, MOVIELENS_TWENTY_MILLION_DATASET, FOOD_COM_RECIPE_DATASET
         # TASTE_PROFILE_DATASET,
         # MY_ANIME_LIST_DATASET
@@ -66,6 +69,9 @@ class RegisteredDataset:
         # Last FM Two Billion
         elif dataset == RegisteredDataset.LASTFM_TWO_BILLION_DATASET:
             return LastFMTwoBillion()
+        # Yelp
+        elif dataset == RegisteredDataset.YELP_DATASET:
+            return Yelp()
         else:
             raise "The requested dataset is not registered in the system"
 
@@ -108,6 +114,9 @@ class RegisteredDataset:
         # Last FM Two Billion
         elif dataset == RegisteredDataset.LASTFM_TWO_BILLION_DATASET:
             instance = LastFMTwoBillion()
+        # Yelp
+        elif dataset == RegisteredDataset.YELP_DATASET:
+            instance = Yelp()
         else:
             raise "The requested dataset is not registered in the system"
 

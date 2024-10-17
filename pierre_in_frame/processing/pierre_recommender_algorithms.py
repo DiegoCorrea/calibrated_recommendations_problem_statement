@@ -38,27 +38,37 @@ class PierreRecommenderAlgorithm:
         self.based_on = based_on
         self.experiment_name = experiment_name
 
-        # Load the surprise recommender algorithm
-        full_params = SaveAndLoad.load_hyperparameters_recommender(
-            experiment_name=self.experiment_name, based_on=self.based_on,
-            dataset=self.dataset.system_name, algorithm=self.recommender_name
-        )
-        if self.recommender_name == Label.DEEP_AE:
-            self.recommender = recommender_pierre.DeppAutoEncModel.DeppAutoEncModel(
-                factors=int(full_params["params"]["factors"]),
-                epochs=int(full_params["params"]["epochs"]),
-                dropout=int(full_params["params"]["dropout"]),
-                lr=int(full_params["params"]["lr"]),
-                reg=int(full_params["params"]["reg"]), list_size=int(self.list_size)
-            )
+        if self.recommender_name in Label.PIERRE_RECOMMENDERS_NO_PARAMS:
+            if self.recommender_name == Label.POPULARITY_REC:
+                self.recommender = recommender_pierre.Popularity.PopularityRecommender(
+                    list_size=int(self.list_size)
+                )
+            else:
+                self.recommender = recommender_pierre.Random.RandomRecommender(
+                    list_size=int(self.list_size)
+                )
         else:
-            self.recommender = recommender_pierre.CDAEModel.CDAEModel(
-                factors=int(full_params["params"]["factors"]),
-                epochs=int(full_params["params"]["epochs"]),
-                dropout=int(full_params["params"]["dropout"]),
-                lr=int(full_params["params"]["lr"]),
-                reg=int(full_params["params"]["reg"]), list_size=int(self.list_size)
+            # Load the surprise recommender algorithm
+            full_params = SaveAndLoad.load_hyperparameters_recommender(
+                experiment_name=self.experiment_name, based_on=self.based_on,
+                dataset=self.dataset.system_name, algorithm=self.recommender_name
             )
+            if self.recommender_name == Label.DEEP_AE:
+                self.recommender = recommender_pierre.DeppAutoEncModel.DeppAutoEncModel(
+                    factors=int(full_params["params"]["factors"]),
+                    epochs=int(full_params["params"]["epochs"]),
+                    dropout=int(full_params["params"]["dropout"]),
+                    lr=int(full_params["params"]["lr"]),
+                    reg=int(full_params["params"]["reg"]), list_size=int(self.list_size)
+                )
+            else:
+                self.recommender = recommender_pierre.CDAEModel.CDAEModel(
+                    factors=int(full_params["params"]["factors"]),
+                    epochs=int(full_params["params"]["epochs"]),
+                    dropout=int(full_params["params"]["dropout"]),
+                    lr=int(full_params["params"]["lr"]),
+                    reg=int(full_params["params"]["reg"]), list_size=int(self.list_size)
+                )
 
     def run(self):
         """

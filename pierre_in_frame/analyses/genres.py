@@ -1,3 +1,4 @@
+import itertools
 from collections import Counter
 from multiprocessing import Pool
 
@@ -38,8 +39,8 @@ def split_genres(user_transactions_df):
         genres_list = genres_list + splitted_genre_list
     count_dict = Counter(genres_list)
     values_list = list(count_dict.values())
-    sum_values_list = sum(values_list)
-    values_list = [v / sum_values_list for v in values_list]
+    # sum_values_list = sum(values_list)
+    # values_list = [v / sum_values_list for v in values_list]
     df = DataFrame([values_list], columns=list(count_dict.keys()))
     return df
 

@@ -1,0 +1,6 @@
+{
+  "experiment_name": "COMPARING_MODELS",
+  "opt": "CHART",
+  "dataset": "yelp",
+  "based_on": "CVTT"
+}
