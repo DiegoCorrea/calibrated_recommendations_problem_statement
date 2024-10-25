@@ -117,6 +117,67 @@ class GenreChats:
         )
         plt.close('all')
 
+    @staticmethod
+    def compare_genre_distribution_two_bar(
+            distribution1, distribution2, dataset: str,
+            label1: str = 'Users', label2: str = 'Items', ylabel: str = 'Genres',
+            graphic_name: str = "compare_genre_distribution_bar"
+    ):
+        distribution1 = distribution1.reindex(sorted(distribution1.columns), axis=1)
+        distribution2 = distribution2.reindex(sorted(distribution2.columns), axis=1)
+        dist1_sum_list = distribution1.sum(axis=0).tolist()
+        dist2_sum_list = distribution2.sum(axis=0).tolist()
+        dist1_sum = sum(dist1_sum_list)
+        dist2_sum = sum(dist2_sum_list)
+        dist1_means = [x/dist1_sum for x in dist1_sum_list]
+        dist2_means = [y/dist2_sum for y in dist2_sum_list]
+        dist1_std = distribution1.sem(axis=0).tolist()
+        dist2_std = distribution2.sem(axis=0).tolist()
+        labels = distribution1.columns.tolist()
+
+        x = np.arange(len(labels))  # the label locations
+        width = 0.35  # the width of the bars
+
+        fig, (ax1, ax2) = plt.subplots(2)
+        plt.rc('xtick', labelsize=16)
+        plt.rc('ytick', labelsize=16)
+        rects1 = ax1.bar(x - width / 2, dist1_means, width, label=label1, color="red")
+        rects2 = ax2.bar(x + width / 2, dist2_means, width, label=label2, color="blue")
+
+        # Add some text for labels, title and custom x-axis tick labels, etc.
+        ax1.set_ylabel(ylabel, fontsize=ChartsConfig.FONT_SIZE_VALUE)
+        ax2.set_ylabel(ylabel, fontsize=ChartsConfig.FONT_SIZE_VALUE)
+        # ax.set_xticks(x)
+        # ax.set_xticklabels(labels)
+        # ax.legend()
+
+        fig.tight_layout()
+
+        # plt.xticks(rotation=90)
+
+        saving_file = PathDirFile.preprocessing_graphics_file(
+            dataset=dataset, filename=graphic_name + '.eps'
+        )
+        # Salvar figura no disco
+        plt.savefig(
+            saving_file,
+            format='eps',
+            dpi=ChartsConfig.DPI_VALUE,
+            bbox_inches='tight'
+        )
+
+        saving_file = PathDirFile.preprocessing_graphics_file(
+            dataset=dataset, filename=graphic_name + '.png'
+        )
+        # Salvar figura no disco
+        plt.savefig(
+            saving_file,
+            format='png',
+            dpi=ChartsConfig.DPI_VALUE,
+            bbox_inches='tight'
+        )
+        plt.close('all')
+
 
 # def genre_distribution_bar(genre_distr_df, db, distr_type):
 #     # genre_distr_df = genre_distr_df.reindex(sorted(genre_distr_df.columns), axis=1)

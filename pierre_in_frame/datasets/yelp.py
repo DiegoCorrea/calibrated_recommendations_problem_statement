@@ -80,9 +80,11 @@ class Yelp(Dataset):
         raw_transactions = self.get_raw_transactions()
 
         print("Cleaning Dataset")
+        print("Drop Duplicate")
         # Filter transactions based on the items id list.
         filtered_raw_transactions = raw_transactions[
-            raw_transactions[Label.ITEM_ID].isin(self.items[Label.ITEM_ID].tolist())]
+            raw_transactions[Label.ITEM_ID].isin(self.items[Label.ITEM_ID].tolist())
+        ].drop_duplicates(subset=[Label.USER_ID, Label.ITEM_ID], keep='last')
 
         # Cut users and set the new data into the instance.
         self.set_transactions(

@@ -67,6 +67,7 @@ class LastFMTwoBillion(Dataset):
                 'timestamp': Label.TIME,
             }, inplace=True
         )
+        self.raw_transactions = self.filtering_transations(raw_transactions)
 
     def filtering_transations(self, raw_transactions):
         combined_raw_transactions = raw_transactions.groupby(
@@ -90,8 +91,7 @@ class LastFMTwoBillion(Dataset):
         super().clean_transactions()
 
         # Load the raw transactions.
-        raw_transactions = self.get_raw_transactions()
-        combined_raw_transactions = self.filtering_transations(raw_transactions)
+        combined_raw_transactions = self.get_raw_transactions()
 
         combined_raw_transactions = combined_raw_transactions.astype({
             Label.USER_ID: 'int32',
@@ -159,11 +159,14 @@ class LastFMTwoBillion(Dataset):
 
         def make_dict(line_str: str):
             line = json.loads(line_str)
+            genres = "|".join(list(line["tags"].keys()))
+            if len(genres) == 0 or genres is None:
+                genres = "(no genres listed)"
             result = {
                 Label.ITEM_ID: int(line["i"]),
                 Label.ARTIST: line["_id"]["artist"],
                 Label.TRACK_ID: line["_id"]["track"],
-                Label.GENRES: "|".join(list(line["tags"].keys())),
+                Label.GENRES: genres,
             }
             return result
 
@@ -184,7 +187,7 @@ class LastFMTwoBillion(Dataset):
 
         # Clean the items without information and with the label indicating no genre in the item.
         raw_items_df.dropna(inplace=True)
-        genre_clean_items = raw_items_df[raw_items_df[Label.GENRES] != '']
+        genre_clean_items = raw_items_df[raw_items_df[Label.GENRES] != '(no genres listed)']
 
         # Set the new data into the instance.
         self.set_items(new_items=genre_clean_items)

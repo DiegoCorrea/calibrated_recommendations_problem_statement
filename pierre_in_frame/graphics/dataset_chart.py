@@ -58,20 +58,36 @@ class DatasetChart:
 
     def users_genres_raw_and_clean(self):
         print("Processing Raw Items")
-        raw_transactions_df = self.dataset.get_raw_transactions().merge(self.dataset.get_raw_items(), on=Label.ITEM_ID)
-        raw_dist_df = genre_probability_distribution(raw_transactions_df, label=Label.USER_ID)
-        raw_dist_df.head(5)
+        raw_dist_df = genre_probability_distribution_mono(
+            transactions_df=self.dataset.get_raw_transactions(),
+            items_df=self.dataset.get_raw_items(),
+            label=Label.USER_ID
+        )
 
         print("Processing Clean Items")
-        clean_transactions_df = self.dataset.get_transactions().merge(self.dataset.get_items(), on=Label.ITEM_ID)
-        clean_dist_df = genre_probability_distribution(clean_transactions_df, label=Label.USER_ID)
+        clean_dist_df = genre_probability_distribution_mono(
+            transactions_df=self.dataset.get_transactions(),
+            items_df=self.dataset.get_items(),
+            label=Label.USER_ID
+        )
 
+        diff_columns = list(set(raw_dist_df.columns) - set(clean_dist_df.columns))
+        for column in diff_columns:
+            clean_dist_df[column] = 0
+
+        print("Producing Graphics")
         GenreChats.compare_genre_distribution_bar(
             distribution1=raw_dist_df, distribution2=clean_dist_df, dataset=self.dataset.dir_name,
             label1="Raw", label2="Cleaned", ylabel="Total Times",
-            experiment_name=self.experiment_name,
-            based_on=self.based_on
+            graphic_name="users_genres_raw_and_clean"
         )
+
+        GenreChats.compare_genre_distribution_two_bar(
+            distribution1=raw_dist_df, distribution2=clean_dist_df, dataset=self.dataset.dir_name,
+            label1="Raw", label2="Cleaned", ylabel="Frequency",
+            graphic_name="compare_genre_distribution_two_bar"
+        )
+        print("Graphics saved")
 
     def items_genres_raw_and_clean(self):
         print("Processing Raw Items")
