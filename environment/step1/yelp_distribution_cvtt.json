@@ -1,20 +1,12 @@
 {
   "experiment_name": "COMPARING_MODELS",
   "multiprocessing": "starmap",
-  "n_jobs": 3,
+  "n_jobs": 1,
   "opt": "DISTRIBUTION",
   "based_on": "CVTT",
   "dataset": "yelp",
   "distribution": [
-    "CWS",
-    "WPS",
-    "GLEB",
-    "TWB",
-    "TSW",
-    "TWB_GLEB",
-    "TSW_GLEB",
-    "TSW_TWB_GLEB",
-    "TSW_TWB_GLEB_P"
+    "CWS"
   ],
   "fold": [1, 2, 3],
   "trial": [1]
