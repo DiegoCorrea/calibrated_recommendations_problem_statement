@@ -171,7 +171,7 @@ class FoodComRecipe(Dataset):
 
         # Clean the items without information and with the label indicating no genre in the item.
         raw_items_df.dropna(inplace=True)
-        raw_items_df[Label.GENRES] = raw_items_df[Label.GENRES].apply(lambda tags: "|".join(ast.literal_eval(tags)))
+        # raw_items_df[Label.GENRES] = raw_items_df[Label.GENRES].apply(lambda tags: "|".join(ast.literal_eval(tags)))
         genre_clean_items = raw_items_df[raw_items_df[Label.GENRES] != ''].copy()
 
         # Set the new data into the instance.
