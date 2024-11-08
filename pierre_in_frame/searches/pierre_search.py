@@ -43,7 +43,10 @@ class PierreGridSearch(BaseSearch):
         self.count = 0
 
     @staticmethod
-    def fit_ease(lambda_: float, implicit: bool, train_list: list, valid_list: list):
+    def fit_ease(
+            lambda_: float, implicit: bool, train_list: list, valid_list: list,
+            based_on, experiment_name, algorithm, dataset_name
+    ):
         """
         Fits the pierre grid search algorithm to the training set and testing set.
         """
@@ -59,7 +62,7 @@ class PierreGridSearch(BaseSearch):
             map_value.append(mapv)
             mrr_value.append(mrrv)
 
-        return {
+        params = {
             "map": mean(map_value),
             "mrr": mean(mrr_value),
             "params": {
@@ -67,11 +70,17 @@ class PierreGridSearch(BaseSearch):
                 "implicit": implicit
             }
         }
+        PierreGridSearch.defining_metric_and_save_during_run(
+            dataset_name=dataset_name, algorithm=algorithm, params=params,
+            based_on=based_on, experiment_name=experiment_name
+        )
+        return params
 
     @staticmethod
     def fit_bpr(
             factors, regularization, learning_rate, iterations, random_state,
-            train_list, valid_list, list_size
+            train_list, valid_list, list_size,
+            based_on, experiment_name, algorithm, dataset_name
     ):
         """
         Fits the pierre grid search algorithm to the training set and testing set.
@@ -89,7 +98,7 @@ class PierreGridSearch(BaseSearch):
             map_value.append(mapv)
             mrr_value.append(mrrv)
 
-        return {
+        params = {
             "map": mean(map_value),
             "mrr": mean(mrr_value),
             "params": {
@@ -100,11 +109,17 @@ class PierreGridSearch(BaseSearch):
                 "random_state": random_state
             }
         }
+        PierreGridSearch.defining_metric_and_save_during_run(
+            dataset_name=dataset_name, algorithm=algorithm, params=params,
+            based_on=based_on, experiment_name=experiment_name
+        )
+        return params
 
     @staticmethod
     def fit_bpr_graph(
             factors, learning_rate, iterations, lambda_bias, lambda_user, lambda_item,
-            train_list, valid_list, list_size
+            train_list, valid_list, list_size,
+            based_on, experiment_name, algorithm, dataset_name
     ):
         """
         Fits the pierre grid search algorithm to the training set and testing set.
@@ -122,7 +137,7 @@ class PierreGridSearch(BaseSearch):
             map_value.append(mapv)
             mrr_value.append(mrrv)
 
-        return {
+        params = {
             "map": mean(map_value),
             "mrr": mean(mrr_value),
             "params": {
@@ -134,6 +149,11 @@ class PierreGridSearch(BaseSearch):
                 "iterations": iterations
             }
         }
+        PierreGridSearch.defining_metric_and_save_during_run(
+            dataset_name=dataset_name, algorithm=algorithm, params=params,
+            based_on=based_on, experiment_name=experiment_name
+        )
+        return params
 
     def print_run(self):
         self.count += 1
@@ -143,7 +163,8 @@ class PierreGridSearch(BaseSearch):
 
     @staticmethod
     def fit_autoencoders(
-            algorithm, factors, epochs, dropout, lr, reg, train_list, valid_list
+            algorithm, factors, epochs, dropout, lr, reg, train_list, valid_list,
+            based_on, experiment_name, dataset_name
     ):
         """
         Fits the pierre grid search algorithm to the training set and testing set.
@@ -168,7 +189,7 @@ class PierreGridSearch(BaseSearch):
             map_value.append(mapv)
             mrr_value.append(mrrv)
 
-        return {
+        params = {
             "map": mean(map_value),
             "mrr": mean(mrr_value),
             "params": {
@@ -179,6 +200,11 @@ class PierreGridSearch(BaseSearch):
                 "reg": reg
             }
         }
+        PierreGridSearch.defining_metric_and_save_during_run(
+            dataset_name=dataset_name, algorithm=algorithm, params=params,
+            based_on=based_on, experiment_name=experiment_name
+        )
+        return params
 
     @staticmethod
     def fit_popularity(
@@ -310,57 +336,30 @@ class PierreGridSearch(BaseSearch):
             params_to_use = self.get_params_dae()
             print("Total of combinations: ", str(len(params_to_use)))
 
-            # self.output = [
-            #     self.fit_autoencoders(
-            #         algorithm=self.algorithm, factors=factors, epochs=epochs,
-            #         dropout=dropout, lr=lr, reg=reg,
-            #         train_list=deepcopy(self.train_list),
-            #         valid_list=deepcopy(self.valid_list)
-            #     ) for factors, epochs, dropout, lr, reg in params_to_use
-            # ]
-
-            # Starting the recommender algorithm
             self.output = list(Parallel(n_jobs=self.n_jobs, verbose=100)(
                 delayed(PierreGridSearch.fit_autoencoders)(
                     algorithm=self.algorithm, factors=factors, epochs=epochs,
                     dropout=dropout, lr=lr, reg=reg,
                     train_list=deepcopy(self.train_list),
-                    valid_list=deepcopy(self.valid_list)
+                    valid_list=deepcopy(self.valid_list),
+                    experiment_name=deepcopy(self.experiment_name),
+                    dataset_name=deepcopy(self.dataset.system_name)
                 ) for factors, epochs, dropout, lr, reg in params_to_use
             ))
         elif self.algorithm in Label.EASE_RECOMMENDERS:
             params_to_use = self.get_params_ease()
             print("Total of combinations: ", str(len(params_to_use)))
 
-            # self.output = [
-            #     PierreGridSearch.fit_ease(
-            #         lambda_=lambda_, implicit=implicit,
-            #         train_list=deepcopy(self.train_list),
-            #         valid_list=deepcopy(self.valid_list)
-            #     ) for lambda_, implicit in params_to_use
-            # ]
             self.output = list(Parallel(n_jobs=self.n_jobs, verbose=100)(
                 delayed(PierreGridSearch.fit_ease)(
                     lambda_=lambda_, implicit=implicit,
                     train_list=deepcopy(self.train_list),
-                    valid_list=deepcopy(self.valid_list)
+                    valid_list=deepcopy(self.valid_list),
+                    experiment_name=deepcopy(self.experiment_name),
+                    algorithm=deepcopy(self.algorithm),
+                    dataset_name=deepcopy(self.dataset.system_name)
                 ) for lambda_, implicit in params_to_use
             ))
-        elif self.algorithm in Label.POPULARITY_REC:
-            self.output = []
-            self.output.append(PierreGridSearch.fit_popularity(
-                train_list=deepcopy(self.train_list),
-                valid_list=deepcopy(self.valid_list),
-                list_size=self.list_size
-            ))
-        elif self.algorithm in Label.RANDOM_REC:
-            self.output = []
-            self.output.append(PierreGridSearch.fit_random(
-                train_list=deepcopy(self.train_list),
-                valid_list=deepcopy(self.valid_list),
-                list_size=self.list_size
-            ))
-
         elif self.algorithm in Label.BPRGRAPH:
             params_to_use = self.get_bpr_graph_params()
             print("Total of combinations: ", str(len(params_to_use)))
@@ -374,7 +373,10 @@ class PierreGridSearch(BaseSearch):
                     learning_rate=int(learning_rate), iterations=int(iterations),
                     train_list=deepcopy(self.train_list),
                     valid_list=deepcopy(self.valid_list),
-                    list_size=self.list_size
+                    list_size=self.list_size,
+                    experiment_name=deepcopy(self.experiment_name),
+                    algorithm=deepcopy(self.algorithm),
+                    dataset_name=deepcopy(self.dataset.system_name)
                 ) for factors, learning_rate, lambda_item, lambda_user, lambda_bias, iterations
                 in params_to_use
             ))
@@ -389,7 +391,10 @@ class PierreGridSearch(BaseSearch):
                     random_state=random_state,
                     train_list=deepcopy(self.train_list),
                     valid_list=deepcopy(self.valid_list),
-                    list_size=self.list_size
+                    list_size=self.list_size,
+                    experiment_name=deepcopy(self.experiment_name),
+                    algorithm=deepcopy(self.algorithm),
+                    dataset_name=deepcopy(self.dataset.system_name)
                 ) for factors, regularization, learning_rate, iterations, random_state, num_threads
                 in params_to_use
             ))

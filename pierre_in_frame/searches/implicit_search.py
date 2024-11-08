@@ -80,7 +80,8 @@ class ImplicitGridSearch(BaseSearch):
     @staticmethod
     def fit_als(
             factors, regularization, alpha, iterations, random_state,
-            train_list, valid_list, list_size
+            train_list, valid_list, list_size,
+            based_on, experiment_name, algorithm, dataset_name
     ):
         map_value = []
         mrr_value = []
@@ -106,7 +107,7 @@ class ImplicitGridSearch(BaseSearch):
         print(f"map list: {map_value}\n"
               f"mrr list: {mrr_value}")
 
-        return {
+        params = {
             "map": mean(map_value),
             "mrr": mean(mrr_value),
             "params": {
@@ -117,11 +118,17 @@ class ImplicitGridSearch(BaseSearch):
                 "random_state": random_state
             }
         }
+        ImplicitGridSearch.defining_metric_and_save_during_run(
+            dataset_name=dataset_name, algorithm=algorithm, params=params,
+            based_on=based_on, experiment_name=experiment_name
+        )
+        return params
 
     @staticmethod
     def fit_bpr(
             factors, regularization, learning_rate, iterations, random_state,
-            train_list, valid_list, list_size
+            train_list, valid_list, list_size,
+            based_on, experiment_name, algorithm, dataset_name
     ):
         map_value = []
         mrr_value = []
@@ -147,7 +154,7 @@ class ImplicitGridSearch(BaseSearch):
         print(f"map list: {map_value}\n"
               f"mrr list: {mrr_value}")
 
-        return {
+        params = {
             "map": mean(map_value),
             "mrr": mean(mrr_value),
             "params": {
@@ -158,10 +165,16 @@ class ImplicitGridSearch(BaseSearch):
                 "random_state": random_state
             }
         }
+        ImplicitGridSearch.defining_metric_and_save_during_run(
+            dataset_name=dataset_name, algorithm=algorithm, params=params,
+            based_on=based_on, experiment_name=experiment_name
+        )
+        return params
 
     @staticmethod
     def fit_item_knn(
-            k, train_list, valid_list, list_size
+            k, train_list, valid_list, list_size,
+            based_on, experiment_name, algorithm, dataset_name
     ):
         map_value = []
         mrr_value = []
@@ -186,13 +199,18 @@ class ImplicitGridSearch(BaseSearch):
         print(f"map list: {map_value}\n"
               f"mrr list: {mrr_value}")
 
-        return {
+        params = {
             "map": mean(map_value),
             "mrr": mean(mrr_value),
             "params": {
                 "K": k
             }
         }
+        ImplicitGridSearch.defining_metric_and_save_during_run(
+            dataset_name=dataset_name, algorithm=algorithm, params=params,
+            based_on=based_on, experiment_name=experiment_name
+        )
+        return params
 
     def get_als_params(self):
         param_distributions = ImplicitParams.ALS_PARAMS
@@ -245,7 +263,10 @@ class ImplicitGridSearch(BaseSearch):
                     random_state=random_state,
                     train_list=deepcopy(self.train_list),
                     valid_list=deepcopy(self.valid_list),
-                    list_size=self.list_size
+                    list_size=self.list_size,
+                    experiment_name=deepcopy(self.experiment_name),
+                    algorithm=deepcopy(self.algorithm),
+                    dataset_name=deepcopy(self.dataset.system_name)
                 ) for factors, regularization, alpha, iterations, random_state, num_threads in
                 params_to_use
             ))
@@ -261,7 +282,10 @@ class ImplicitGridSearch(BaseSearch):
                     random_state=random_state,
                     train_list=deepcopy(self.train_list),
                     valid_list=deepcopy(self.valid_list),
-                    list_size=self.list_size
+                    list_size=self.list_size,
+                    experiment_name=deepcopy(self.experiment_name),
+                    algorithm=deepcopy(self.algorithm),
+                    dataset_name=deepcopy(self.dataset.system_name)
                 ) for factors, regularization, learning_rate, iterations, random_state, num_threads
                 in params_to_use
             ))
@@ -275,7 +299,10 @@ class ImplicitGridSearch(BaseSearch):
                     k=k,
                     train_list=deepcopy(self.train_list),
                     valid_list=deepcopy(self.valid_list),
-                    list_size=self.list_size
+                    list_size=self.list_size,
+                    experiment_name=deepcopy(self.experiment_name),
+                    algorithm=deepcopy(self.algorithm),
+                    dataset_name=deepcopy(self.dataset.system_name)
                 ) for k in params_to_use
             ))
         else:

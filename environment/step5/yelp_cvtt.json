@@ -1,14 +1,16 @@
 {
+  "experiment_name": "COMPARING_MODELS",
+  "based_on": "CVTT",
   "multiprocessing": "joblib",
-  "n_jobs": 5,
-  "checkpoint": "YES",
+  "n_jobs": 61,
+  "checkpoint": "NO",
   "opt": "EVALUATION_METRICS",
   "metric": [
-    "ILS",
-    "PERSONALIZATION"
+    "MACE",
+    "MAP"
   ],
-  "recommender": ["BPR", "ALS", "DEEP_AE"],
-  "dataset": ["ml-20m", "lfm-2b-subset", "food"],
+  "recommender": ["BPR", "ALS", "ITEMKNN", "SVD", "POPULARITY_REC"],
+  "dataset": ["yelp"],
   "fold": [1, 2, 3],
   "trial": [1],
   "tradeoff": ["LIN"],
@@ -21,15 +23,7 @@
     "C@0.9", "C@1.0"
   ],
   "distribution": [
-    "CWS",
-    "WPS",
-    "GLEB",
-    "TWB",
-    "TSW",
-    "TWB_GLEB",
-    "TSW_GLEB",
-    "TSW_TWB_GLEB",
-    "TSW_TWB_GLEB_P"
+    "CWS"
   ],
   "selector": ["SURROGATE"]
 }

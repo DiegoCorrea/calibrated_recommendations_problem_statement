@@ -4,11 +4,11 @@
   "multiprocessing": "joblib",
   "based_on": "CROSS_TRAIN_VALIDATION_TEST",
   "n_inter": 21,
-  "n_jobs": 1,
+  "n_jobs": 21,
   "n_threads": 1,
   "n_cv": 3,
   "dataset": ["ml-1m"],
-  "recommender": ["ITEMKNN"],
+  "recommender": ["BPR", "ALS", "ITEMKNN", "SVD"],
   "fold": 3,
   "trial": 1
 }
