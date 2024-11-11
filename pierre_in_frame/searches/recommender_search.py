@@ -303,7 +303,6 @@ class SurpriseRandomSearch(BaseSearch):
             dataset_name=dataset_name, algorithm=algorithm, params=params,
             based_on=based_on, experiment_name=experiment_name
         )
-        return params
 
     @staticmethod
     def fit_svd(
@@ -351,7 +350,6 @@ class SurpriseRandomSearch(BaseSearch):
             dataset_name=dataset_name, algorithm=algorithm, params=params,
             based_on=based_on, experiment_name=experiment_name
         )
-        return params
 
     @staticmethod
     def fit_knn(
@@ -395,7 +393,6 @@ class SurpriseRandomSearch(BaseSearch):
             dataset_name=dataset_name, algorithm=algorithm, params=params,
             based_on=based_on, experiment_name=experiment_name
         )
-        return params
 
     def get_user_knn_params(self):
         param_distributions = SurpriseParams.USER_KNN_SEARCH_PARAMS
@@ -445,7 +442,7 @@ class SurpriseRandomSearch(BaseSearch):
             print("Total of combinations: ", str(len(params_to_use)))
             if self.multiprocessing_lib == Label.JOBLIB:
                 # Starting the recommender algorithm
-                self.output = list(Parallel(n_jobs=self.n_jobs, verbose=100)(
+                Parallel(n_jobs=self.n_jobs, verbose=100)(
                     delayed(SurpriseRandomSearch.fit_nmf)(
                         n_factors=n_factors, n_epochs=n_epochs, reg_pu=reg_pu,
                         reg_qi=reg_qi, reg_bu=reg_bu, reg_bi=reg_bi, lr_bu=lr_bu, lr_bi=lr_bi,
@@ -460,7 +457,7 @@ class SurpriseRandomSearch(BaseSearch):
                         dataset_name=deepcopy(self.dataset.system_name)
                     ) for n_factors, n_epochs, reg_pu, reg_qi, reg_bu, reg_bi, lr_bu, lr_bi, random_state in
                     params_to_use
-                ))
+                )
             else:
                 process_args = []
                 for n_factors, n_epochs, reg_pu, reg_qi, reg_bu, reg_bi, lr_bu, lr_bi, random_state in params_to_use:
@@ -472,7 +469,7 @@ class SurpriseRandomSearch(BaseSearch):
                         deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
                     ))
                 pool = multiprocessing.Pool(processes=self.n_jobs)
-                self.output = list(pool.starmap(SurpriseRandomSearch.fit_nmf, process_args))
+                pool.starmap(SurpriseRandomSearch.fit_nmf, process_args)
                 pool.close()
                 pool.join()
 
@@ -482,7 +479,7 @@ class SurpriseRandomSearch(BaseSearch):
 
             if self.multiprocessing_lib == Label.JOBLIB:
                 # Starting the recommender algorithm
-                self.output = list(Parallel(n_jobs=self.n_jobs, verbose=100)(
+                Parallel(n_jobs=self.n_jobs, verbose=100)(
                     delayed(SurpriseRandomSearch.fit_svd)(
                         n_factors=n_factors, n_epochs=n_epochs,
                         lr_all=lr_all, reg_all=reg_all,
@@ -497,7 +494,7 @@ class SurpriseRandomSearch(BaseSearch):
                         dataset_name=deepcopy(self.dataset.system_name)
                     ) for n_factors, n_epochs, lr_all, reg_all, random_state
                     in params_to_use
-                ))
+                )
             else:
                 process_args = []
                 for n_factors, n_epochs, lr_all, reg_all, random_state in params_to_use:
@@ -509,7 +506,7 @@ class SurpriseRandomSearch(BaseSearch):
                         deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
                     ))
                 pool = multiprocessing.Pool(processes=self.n_jobs)
-                self.output = list(pool.starmap(SurpriseRandomSearch.fit_svd, process_args))
+                pool.starmap(SurpriseRandomSearch.fit_svd, process_args)
                 pool.close()
                 pool.join()
 
@@ -519,7 +516,7 @@ class SurpriseRandomSearch(BaseSearch):
 
             if self.multiprocessing_lib == Label.JOBLIB:
                 # Starting the recommender algorithm
-                self.output = list(Parallel(n_jobs=self.n_jobs, verbose=100)(
+                Parallel(n_jobs=self.n_jobs, verbose=100)(
                     delayed(SurpriseRandomSearch.fit_knn)(
                         k=k, sim_options=sim_options,
                         train_list=deepcopy(self.train_list),
@@ -532,7 +529,7 @@ class SurpriseRandomSearch(BaseSearch):
                         dataset_name=deepcopy(self.dataset.system_name)
                     ) for k, sim_options
                     in params_to_use
-                ))
+                )
             else:
                 process_args = []
                 for k, sim_options in params_to_use:
@@ -544,7 +541,7 @@ class SurpriseRandomSearch(BaseSearch):
                         deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
                     ))
                 pool = multiprocessing.Pool(processes=self.n_jobs)
-                self.output = list(pool.starmap(SurpriseRandomSearch.fit_knn, process_args))
+                pool.starmap(SurpriseRandomSearch.fit_knn, process_args)
                 pool.close()
                 pool.join()
         else:

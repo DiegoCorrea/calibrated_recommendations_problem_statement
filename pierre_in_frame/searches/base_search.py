@@ -115,5 +115,3 @@ class BaseSearch:
         self.preparing_data()
 
         self.preparing_recommenders()
-
-        self.defining_metric_and_save()

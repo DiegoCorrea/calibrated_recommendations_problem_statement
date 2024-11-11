@@ -122,7 +122,6 @@ class ImplicitGridSearch(BaseSearch):
             dataset_name=dataset_name, algorithm=algorithm, params=params,
             based_on=based_on, experiment_name=experiment_name
         )
-        return params
 
     @staticmethod
     def fit_bpr(
@@ -169,7 +168,6 @@ class ImplicitGridSearch(BaseSearch):
             dataset_name=dataset_name, algorithm=algorithm, params=params,
             based_on=based_on, experiment_name=experiment_name
         )
-        return params
 
     @staticmethod
     def fit_item_knn(
@@ -210,7 +208,6 @@ class ImplicitGridSearch(BaseSearch):
             dataset_name=dataset_name, algorithm=algorithm, params=params,
             based_on=based_on, experiment_name=experiment_name
         )
-        return params
 
     def get_als_params(self):
         param_distributions = ImplicitParams.ALS_PARAMS
@@ -256,7 +253,7 @@ class ImplicitGridSearch(BaseSearch):
             print("Total of combinations: ", str(len(params_to_use)))
 
             # Starting the recommender algorithm
-            self.output = list(Parallel(n_jobs=self.n_jobs)(
+            Parallel(n_jobs=self.n_jobs)(
                 delayed(ImplicitGridSearch.fit_als)(
                     factors=factors, regularization=regularization, alpha=alpha,
                     iterations=iterations,
@@ -269,13 +266,13 @@ class ImplicitGridSearch(BaseSearch):
                     dataset_name=deepcopy(self.dataset.system_name)
                 ) for factors, regularization, alpha, iterations, random_state, num_threads in
                 params_to_use
-            ))
+            )
         elif self.algorithm == Label.BPR:
             params_to_use = self.get_bpr_params()
             print("Total of combinations: ", str(len(params_to_use)))
 
             # Starting the recommender algorithm
-            self.output = list(Parallel(n_jobs=self.n_jobs)(
+            Parallel(n_jobs=self.n_jobs)(
                 delayed(ImplicitGridSearch.fit_bpr)(
                     factors=factors, regularization=regularization,
                     learning_rate=learning_rate, iterations=iterations,
@@ -288,13 +285,13 @@ class ImplicitGridSearch(BaseSearch):
                     dataset_name=deepcopy(self.dataset.system_name)
                 ) for factors, regularization, learning_rate, iterations, random_state, num_threads
                 in params_to_use
-            ))
+            )
         elif self.algorithm == Label.ITEMKNN:
             params_to_use = self.get_item_knn_params()
             print("Total of combinations: ", str(len(params_to_use)))
 
             # Starting the recommender algorithm
-            self.output = list(Parallel(n_jobs=self.n_jobs)(
+            Parallel(n_jobs=self.n_jobs)(
                 delayed(ImplicitGridSearch.fit_item_knn)(
                     k=k,
                     train_list=deepcopy(self.train_list),
@@ -304,6 +301,6 @@ class ImplicitGridSearch(BaseSearch):
                     algorithm=deepcopy(self.algorithm),
                     dataset_name=deepcopy(self.dataset.system_name)
                 ) for k in params_to_use
-            ))
+            )
         else:
             pass

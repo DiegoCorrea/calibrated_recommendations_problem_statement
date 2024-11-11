@@ -74,7 +74,6 @@ class PierreGridSearch(BaseSearch):
             dataset_name=dataset_name, algorithm=algorithm, params=params,
             based_on=based_on, experiment_name=experiment_name
         )
-        return params
 
     @staticmethod
     def fit_bpr(
@@ -113,7 +112,6 @@ class PierreGridSearch(BaseSearch):
             dataset_name=dataset_name, algorithm=algorithm, params=params,
             based_on=based_on, experiment_name=experiment_name
         )
-        return params
 
     @staticmethod
     def fit_bpr_graph(
@@ -153,7 +151,6 @@ class PierreGridSearch(BaseSearch):
             dataset_name=dataset_name, algorithm=algorithm, params=params,
             based_on=based_on, experiment_name=experiment_name
         )
-        return params
 
     def print_run(self):
         self.count += 1
@@ -204,7 +201,6 @@ class PierreGridSearch(BaseSearch):
             dataset_name=dataset_name, algorithm=algorithm, params=params,
             based_on=based_on, experiment_name=experiment_name
         )
-        return params
 
     @staticmethod
     def fit_popularity(
@@ -336,7 +332,7 @@ class PierreGridSearch(BaseSearch):
             params_to_use = self.get_params_dae()
             print("Total of combinations: ", str(len(params_to_use)))
 
-            self.output = list(Parallel(n_jobs=self.n_jobs, verbose=100)(
+            Parallel(n_jobs=self.n_jobs, verbose=100)(
                 delayed(PierreGridSearch.fit_autoencoders)(
                     algorithm=self.algorithm, factors=factors, epochs=epochs,
                     dropout=dropout, lr=lr, reg=reg,
@@ -345,12 +341,12 @@ class PierreGridSearch(BaseSearch):
                     experiment_name=deepcopy(self.experiment_name),
                     dataset_name=deepcopy(self.dataset.system_name)
                 ) for factors, epochs, dropout, lr, reg in params_to_use
-            ))
+            )
         elif self.algorithm in Label.EASE_RECOMMENDERS:
             params_to_use = self.get_params_ease()
             print("Total of combinations: ", str(len(params_to_use)))
 
-            self.output = list(Parallel(n_jobs=self.n_jobs, verbose=100)(
+            Parallel(n_jobs=self.n_jobs, verbose=100)(
                 delayed(PierreGridSearch.fit_ease)(
                     lambda_=lambda_, implicit=implicit,
                     train_list=deepcopy(self.train_list),
@@ -359,12 +355,12 @@ class PierreGridSearch(BaseSearch):
                     algorithm=deepcopy(self.algorithm),
                     dataset_name=deepcopy(self.dataset.system_name)
                 ) for lambda_, implicit in params_to_use
-            ))
+            )
         elif self.algorithm in Label.BPRGRAPH:
             params_to_use = self.get_bpr_graph_params()
             print("Total of combinations: ", str(len(params_to_use)))
 
-            self.output = list(Parallel(n_jobs=self.n_jobs, verbose=100)(
+            Parallel(n_jobs=self.n_jobs, verbose=100)(
                 delayed(PierreGridSearch.fit_bpr_graph)(
                     factors=int(factors),
                     lambda_item=float(lambda_item),
@@ -379,12 +375,12 @@ class PierreGridSearch(BaseSearch):
                     dataset_name=deepcopy(self.dataset.system_name)
                 ) for factors, learning_rate, lambda_item, lambda_user, lambda_bias, iterations
                 in params_to_use
-            ))
+            )
         else:
             params_to_use = self.get_bpr_params()
             print("Total of combinations: ", str(len(params_to_use)))
 
-            self.output = list(Parallel(n_jobs=self.n_jobs, verbose=100)(
+            Parallel(n_jobs=self.n_jobs, verbose=100)(
                 delayed(PierreGridSearch.fit_bpr)(
                     factors=factors, regularization=regularization,
                     learning_rate=learning_rate, iterations=iterations,
@@ -397,4 +393,4 @@ class PierreGridSearch(BaseSearch):
                     dataset_name=deepcopy(self.dataset.system_name)
                 ) for factors, regularization, learning_rate, iterations, random_state, num_threads
                 in params_to_use
-            ))
+            )
