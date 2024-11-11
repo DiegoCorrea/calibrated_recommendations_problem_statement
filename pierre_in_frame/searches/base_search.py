@@ -16,7 +16,7 @@ class BaseSearch:
             algorithm: str, experiment_name: str,
             dataset_name: str, trial: int = 1, fold: int = 3,
             n_jobs: int = 1, list_size: int = 10, n_inter: int = 50,
-            based_on: str = Label.CROSS_TRAIN_VALIDATION_TEST, multiprocessing_lib: str = Label.JOBLIB
+            based_on: str = Label.CROSS_TRAIN_VALIDATION_TEST, multiprocessing_lib: str = Label.STARMAP
     ):
         """
         Parameters
