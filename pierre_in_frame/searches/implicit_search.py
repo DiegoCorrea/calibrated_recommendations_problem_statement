@@ -311,7 +311,7 @@ class ImplicitGridSearch(BaseSearch):
                         deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
                     ))
                 pool = multiprocessing.Pool(processes=self.n_jobs)
-                pool.starmap(ImplicitGridSearch.fit_als, process_args)
+                pool.starmap(ImplicitGridSearch.fit_bpr, process_args)
                 pool.close()
                 pool.join()
         elif self.algorithm == Label.ITEMKNN:
@@ -341,7 +341,7 @@ class ImplicitGridSearch(BaseSearch):
                         deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
                     ))
                 pool = multiprocessing.Pool(processes=self.n_jobs)
-                pool.starmap(ImplicitGridSearch.fit_als, process_args)
+                pool.starmap(ImplicitGridSearch.fit_item_knn, process_args)
                 pool.close()
                 pool.join()
         else:
