@@ -84,10 +84,19 @@ class BaseSearch:
         Saves the pierre grid search algorithm to a file.
         """
         # Load the surprise recommender algorithm
-        full_params = SaveAndLoad.load_hyperparameters_recommender(
-            dataset=dataset_name, algorithm=algorithm,
-            based_on=based_on, experiment_name=experiment_name
-        )
+        full_params = {
+            "map": 0.0
+        }
+        try:
+            full_params = SaveAndLoad.load_hyperparameters_recommender(
+                dataset=dataset_name, algorithm=algorithm,
+                based_on=based_on, experiment_name=experiment_name
+            )
+        except FileNotFoundError:
+            SaveAndLoad.save_hyperparameters_recommender(
+                best_params=params, dataset=dataset_name, algorithm=algorithm,
+                based_on=based_on, experiment_name=experiment_name
+            )
         if float(full_params["map"]) < float(params["map"]):
             # Saving
             SaveAndLoad.save_hyperparameters_recommender(
