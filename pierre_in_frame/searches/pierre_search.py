@@ -3,7 +3,7 @@ Pierre in frame searches
 """
 import threadpoolctl
 from copy import deepcopy
-
+import multiprocessing
 import itertools
 import random
 from joblib import Parallel, delayed
