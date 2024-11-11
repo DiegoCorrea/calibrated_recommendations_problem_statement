@@ -1,6 +1,6 @@
 {
   "experiment_name": "COMPARING_MODELS",
-  "multiprocessing": "joblib",
+  "multiprocessing": "starmap",
   "opt": "RECOMMENDER",
   "based_on": "CVTT",
   "n_inter": 21,

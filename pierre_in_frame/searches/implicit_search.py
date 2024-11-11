@@ -251,56 +251,98 @@ class ImplicitGridSearch(BaseSearch):
         if self.algorithm == Label.ALS:
             params_to_use = self.get_als_params()
             print("Total of combinations: ", str(len(params_to_use)))
+            if self.multiprocessing_lib == Label.JOBLIB:
+                # Starting the recommender algorithm
+                Parallel(n_jobs=self.n_jobs)(
+                    delayed(ImplicitGridSearch.fit_als)(
+                        factors=factors, regularization=regularization, alpha=alpha,
+                        iterations=iterations,
+                        random_state=random_state,
+                        train_list=deepcopy(self.train_list),
+                        valid_list=deepcopy(self.valid_list),
+                        list_size=self.list_size,
+                        experiment_name=deepcopy(self.experiment_name),
+                        algorithm=deepcopy(self.algorithm),
+                        dataset_name=deepcopy(self.dataset.system_name)
+                    ) for factors, regularization, alpha, iterations, random_state, num_threads in
+                    params_to_use
+                )
+            else:
+                process_args = []
+                for factors, regularization, alpha, iterations, random_state, num_threads in params_to_use:
+                    process_args.append((
+                        factors, regularization, alpha, iterations, random_state,
+                        deepcopy(self.train_list), deepcopy(self.valid_list), self.list_size,
+                        deepcopy(self.based_on), deepcopy(self.experiment_name),
+                        deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
+                    ))
+                pool = multiprocessing.Pool(processes=self.n_jobs)
+                pool.starmap(ImplicitGridSearch.fit_als, process_args)
+                pool.close()
+                pool.join()
 
-            # Starting the recommender algorithm
-            Parallel(n_jobs=self.n_jobs)(
-                delayed(ImplicitGridSearch.fit_als)(
-                    factors=factors, regularization=regularization, alpha=alpha,
-                    iterations=iterations,
-                    random_state=random_state,
-                    train_list=deepcopy(self.train_list),
-                    valid_list=deepcopy(self.valid_list),
-                    list_size=self.list_size,
-                    experiment_name=deepcopy(self.experiment_name),
-                    algorithm=deepcopy(self.algorithm),
-                    dataset_name=deepcopy(self.dataset.system_name)
-                ) for factors, regularization, alpha, iterations, random_state, num_threads in
-                params_to_use
-            )
         elif self.algorithm == Label.BPR:
             params_to_use = self.get_bpr_params()
             print("Total of combinations: ", str(len(params_to_use)))
+            if self.multiprocessing_lib == Label.JOBLIB:
 
-            # Starting the recommender algorithm
-            Parallel(n_jobs=self.n_jobs)(
-                delayed(ImplicitGridSearch.fit_bpr)(
-                    factors=factors, regularization=regularization,
-                    learning_rate=learning_rate, iterations=iterations,
-                    random_state=random_state,
-                    train_list=deepcopy(self.train_list),
-                    valid_list=deepcopy(self.valid_list),
-                    list_size=self.list_size,
-                    experiment_name=deepcopy(self.experiment_name),
-                    algorithm=deepcopy(self.algorithm),
-                    dataset_name=deepcopy(self.dataset.system_name)
-                ) for factors, regularization, learning_rate, iterations, random_state, num_threads
-                in params_to_use
-            )
+                # Starting the recommender algorithm
+                Parallel(n_jobs=self.n_jobs)(
+                    delayed(ImplicitGridSearch.fit_bpr)(
+                        factors=factors, regularization=regularization,
+                        learning_rate=learning_rate, iterations=iterations,
+                        random_state=random_state,
+                        train_list=deepcopy(self.train_list),
+                        valid_list=deepcopy(self.valid_list),
+                        list_size=self.list_size,
+                        experiment_name=deepcopy(self.experiment_name),
+                        algorithm=deepcopy(self.algorithm),
+                        dataset_name=deepcopy(self.dataset.system_name)
+                    ) for factors, regularization, learning_rate, iterations, random_state, num_threads
+                    in params_to_use
+                )
+            else:
+                process_args = []
+                for factors, regularization, learning_rate, iterations, random_state, num_threads in params_to_use:
+                    process_args.append((
+                        factors, regularization, learning_rate, iterations, random_state,
+                        deepcopy(self.train_list), deepcopy(self.valid_list), self.list_size,
+                        deepcopy(self.based_on), deepcopy(self.experiment_name),
+                        deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
+                    ))
+                pool = multiprocessing.Pool(processes=self.n_jobs)
+                pool.starmap(ImplicitGridSearch.fit_als, process_args)
+                pool.close()
+                pool.join()
         elif self.algorithm == Label.ITEMKNN:
             params_to_use = self.get_item_knn_params()
             print("Total of combinations: ", str(len(params_to_use)))
+            if self.multiprocessing_lib == Label.JOBLIB:
 
-            # Starting the recommender algorithm
-            Parallel(n_jobs=self.n_jobs)(
-                delayed(ImplicitGridSearch.fit_item_knn)(
-                    k=k,
-                    train_list=deepcopy(self.train_list),
-                    valid_list=deepcopy(self.valid_list),
-                    list_size=self.list_size,
-                    experiment_name=deepcopy(self.experiment_name),
-                    algorithm=deepcopy(self.algorithm),
-                    dataset_name=deepcopy(self.dataset.system_name)
-                ) for k in params_to_use
-            )
+                # Starting the recommender algorithm
+                Parallel(n_jobs=self.n_jobs)(
+                    delayed(ImplicitGridSearch.fit_item_knn)(
+                        k=k,
+                        train_list=deepcopy(self.train_list),
+                        valid_list=deepcopy(self.valid_list),
+                        list_size=self.list_size,
+                        experiment_name=deepcopy(self.experiment_name),
+                        algorithm=deepcopy(self.algorithm),
+                        dataset_name=deepcopy(self.dataset.system_name)
+                    ) for k in params_to_use
+                )
+            else:
+                process_args = []
+                for k in params_to_use:
+                    process_args.append((
+                        k,
+                        deepcopy(self.train_list), deepcopy(self.valid_list), self.list_size,
+                        deepcopy(self.based_on), deepcopy(self.experiment_name),
+                        deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
+                    ))
+                pool = multiprocessing.Pool(processes=self.n_jobs)
+                pool.starmap(ImplicitGridSearch.fit_als, process_args)
+                pool.close()
+                pool.join()
         else:
             pass
