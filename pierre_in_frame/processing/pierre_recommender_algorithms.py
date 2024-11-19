@@ -1,6 +1,10 @@
 import logging
 
-import recommender_pierre
+from recommender_pierre.autoencoders.CDAEModel import CDAEModel
+from recommender_pierre.autoencoders.DeppAutoEncModel import DeppAutoEncModel
+from recommender_pierre.baselines.Popularity import PopularityRecommender
+from recommender_pierre.baselines.Random import RandomRecommender
+
 from datasets.registred_datasets import RegisteredDataset
 from settings.labels import Label
 from settings.save_and_load import SaveAndLoad
@@ -40,11 +44,11 @@ class PierreRecommenderAlgorithm:
 
         if self.recommender_name in Label.PIERRE_RECOMMENDERS_NO_PARAMS:
             if self.recommender_name == Label.POPULARITY_REC:
-                self.recommender = recommender_pierre.Popularity.PopularityRecommender(
+                self.recommender = PopularityRecommender(
                     list_size=int(self.list_size)
                 )
             else:
-                self.recommender = recommender_pierre.Random.RandomRecommender(
+                self.recommender = RandomRecommender(
                     list_size=int(self.list_size)
                 )
         else:
@@ -54,7 +58,7 @@ class PierreRecommenderAlgorithm:
                 dataset=self.dataset.system_name, algorithm=self.recommender_name
             )
             if self.recommender_name == Label.DEEP_AE:
-                self.recommender = recommender_pierre.DeppAutoEncModel.DeppAutoEncModel(
+                self.recommender = DeppAutoEncModel(
                     factors=int(full_params["params"]["factors"]),
                     epochs=int(full_params["params"]["epochs"]),
                     dropout=int(full_params["params"]["dropout"]),
@@ -62,7 +66,7 @@ class PierreRecommenderAlgorithm:
                     reg=int(full_params["params"]["reg"]), list_size=int(self.list_size)
                 )
             else:
-                self.recommender = recommender_pierre.CDAEModel.CDAEModel(
+                self.recommender = CDAEModel(
                     factors=int(full_params["params"]["factors"]),
                     epochs=int(full_params["params"]["epochs"]),
                     dropout=int(full_params["params"]["dropout"]),
