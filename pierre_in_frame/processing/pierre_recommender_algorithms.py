@@ -82,36 +82,36 @@ class PierreRecommenderAlgorithm:
         """
         # fit the recommender algorithm
         logger.info(">>> Fit the recommender algorithm")
-        # self.dataset.set_environment(
-        #     experiment_name=self.experiment_name,
-        #     split_methodology=self.split_methodology
-        # )
-        # if self.split_methodology in Label.BASED_ON_VALIDATION:
-        #     users_preferences = self.dataset.get_full_train_transactions(
-        #         fold=self.fold, trial=self.trial
-        #     )
-        # else:
-        #     users_preferences = self.dataset.get_train_transactions(
-        #         fold=self.fold, trial=self.trial
-        #     )
-        #
-        # rec_lists_df = self.recommender.train_and_produce_rec_list(
-        #     user_transactions_df=users_preferences
-        # )
-        #
-        # # Save all recommendation lists
-        # logger.info(">>> Saving...")
-        # SaveAndLoad.save_candidate_items(
-        #     experiment_name=self.experiment_name, split_methodology=self.split_methodology,
-        #     data=rec_lists_df,
-        #     dataset=self.dataset.system_name, algorithm=self.recommender_name,
-        #     fold=self.fold, trial=self.trial
-        # )
-        rec_lists_df = SaveAndLoad.load_candidate_items(
+        self.dataset.set_environment(
+            experiment_name=self.experiment_name,
+            split_methodology=self.split_methodology
+        )
+        if self.split_methodology in Label.BASED_ON_VALIDATION:
+            users_preferences = self.dataset.get_full_train_transactions(
+                fold=self.fold, trial=self.trial
+            )
+        else:
+            users_preferences = self.dataset.get_train_transactions(
+                fold=self.fold, trial=self.trial
+            )
+
+        rec_lists_df = self.recommender.train_and_produce_rec_list(
+            user_transactions_df=users_preferences
+        )
+
+        # Save all recommendation lists
+        logger.info(">>> Saving...")
+        SaveAndLoad.save_candidate_items(
             experiment_name=self.experiment_name, split_methodology=self.split_methodology,
+            data=rec_lists_df,
             dataset=self.dataset.system_name, algorithm=self.recommender_name,
             fold=self.fold, trial=self.trial
         )
+        # rec_lists_df = SaveAndLoad.load_candidate_items(
+        #     experiment_name=self.experiment_name, split_methodology=self.split_methodology,
+        #     dataset=self.dataset.system_name, algorithm=self.recommender_name,
+        #     fold=self.fold, trial=self.trial
+        # )
 
         test_set_df = SaveAndLoad.load_test_transactions(
             experiment_name=self.experiment_name, split_methodology=self.split_methodology,
