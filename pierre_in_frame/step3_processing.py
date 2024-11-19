@@ -172,7 +172,7 @@ class PierreStep3(Step):
                 f"Trial: {trial},\n"
                 f" split: {split_methodology}\n"
             )
-            rec_lists_df = SaveAndLoad.load_candidate_items(
+            cand_lists_df = SaveAndLoad.load_candidate_items(
                 experiment_name=experiment_name, split_methodology=split_methodology,
                 dataset=dataset, algorithm=recommender,
                 fold=fold, trial=trial
@@ -184,7 +184,7 @@ class PierreStep3(Step):
             )
 
             map_instance = MeanAveragePrecision(
-                users_rec_list_df=rec_lists_df,
+                users_rec_list_df=cand_lists_df,
                 users_test_set_df=test_set_df
             )
 
@@ -193,8 +193,8 @@ class PierreStep3(Step):
 
             candidate_items_top_10 = pd.concat(
                 [
-                    df.sort_values(by="TRANSACTION_VALUE", ascending=False).head(self.experimental_settings['list_size'])
-                    for ix, df in rec_lists_df.groupby(by="USER_ID")
+                    df.sort_values(by="TRANSACTION_VALUE", ascending=False).head(10)
+                    for ix, df in cand_lists_df.groupby(by="USER_ID")
                 ]
             )
 
@@ -203,7 +203,7 @@ class PierreStep3(Step):
                 users_test_set_df=test_set_df
             )
             map_10_value = map_instance_cand.compute()
-            print(f"MAP Value top-{self.experimental_settings['list_size']} is {map_10_value}.")
+            print(f"MAP Value top-10 is {map_10_value}.")
 
         # Finishing the Step
         logger.info(" ".join(['+' * 10, 'System shutdown', '+' * 10]))
