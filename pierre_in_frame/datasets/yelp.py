@@ -114,7 +114,7 @@ class Yelp(Dataset):
         )
         self.set_transactions(
             new_transactions=Yelp.cut_users(
-                transactions=self.transactions, item_cut_value=self.cut_value,
+                transactions=filtered_raw_transactions, item_cut_value=self.cut_value,
                 profile_len_cut_value=self.profile_len_cut_value
             )
         )
