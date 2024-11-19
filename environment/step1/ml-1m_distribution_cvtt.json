@@ -1,20 +1,16 @@
 {
   "experiment_name": "COMPARING_MODELS",
   "multiprocessing": "starmap",
-  "n_jobs": 3,
+  "n_jobs": 61,
   "opt": "DISTRIBUTION",
-  "based_on": "CVTT",
+  "split_methodology": "CVTT",
   "dataset": "ml-1m",
   "distribution": [
-    "CWS",
-    "WPS",
-    "GLEB",
-    "TWB",
-    "TSW",
-    "TWB_GLEB",
-    "TSW_GLEB",
-    "TSW_TWB_GLEB",
-    "TSW_TWB_GLEB_P"
+    "CWS"
+  ],
+  "distribution_class": [
+    "POP",
+    "GENRE"
   ],
   "fold": [1, 2, 3],
   "trial": [1]

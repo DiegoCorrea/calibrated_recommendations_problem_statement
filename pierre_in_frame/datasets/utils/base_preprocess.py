@@ -71,7 +71,7 @@ class Dataset:
         self.test_len_cut_value = None
         self.n_trials = None
         self.n_folds = None
-        self.based_on = None
+        self.split_methodology = None
 
         # Creating the directory to lead with the clean data.
         self.clean_dataset_dir = None
@@ -84,7 +84,7 @@ class Dataset:
             self,
             experiment_name: str, cut_value: int, item_cut_value: int,
             profile_len_cut_value: int, test_len_cut_value: int,
-            n_trials: int, n_folds: int, based_on: str
+            n_trials: int, n_folds: int, split_methodology: str
     ):
         self.experiment_name = experiment_name
         self.cut_value = cut_value
@@ -93,16 +93,16 @@ class Dataset:
         self.test_len_cut_value = test_len_cut_value
         self.n_trials = n_trials
         self.n_folds = n_folds
-        self.based_on = based_on
+        self.split_methodology = split_methodology
         self.create_clean_dir()
 
     def set_environment(
             self,
-            experiment_name: str, based_on: str,
+            experiment_name: str, split_methodology: str,
             n_trials: int = None, n_folds: int = None):
         self.n_trials = n_trials
         self.n_folds = n_folds
-        self.based_on = based_on
+        self.split_methodology = split_methodology
         self.experiment_name = experiment_name
 
     def get_dataset_name(self) -> str:
@@ -143,7 +143,7 @@ class Dataset:
         """
         self.transactions = SaveAndLoad.load_clean_transactions(
             experiment_name=self.experiment_name,
-            dataset=self.get_dataset_name(), based_on=self.based_on
+            dataset=self.get_dataset_name(), split_methodology=self.split_methodology
         )
 
     def get_transactions(self) -> pd.DataFrame():
@@ -190,7 +190,7 @@ class Dataset:
         """
         self.train_transaction = SaveAndLoad.load_train_transactions(
             experiment_name=self.experiment_name,
-            dataset=self.get_dataset_name(), based_on=self.based_on,
+            dataset=self.get_dataset_name(), split_methodology=self.split_methodology,
             trial=trial, fold=fold
         )
 
@@ -213,7 +213,7 @@ class Dataset:
         """
         self.validation_transaction = SaveAndLoad.load_validation_transactions(
             experiment_name=self.experiment_name,
-            dataset=self.get_dataset_name(), based_on=self.based_on,
+            dataset=self.get_dataset_name(), split_methodology=self.split_methodology,
             trial=trial, fold=fold
         )
 
@@ -236,7 +236,7 @@ class Dataset:
         """
         self.test_transaction = SaveAndLoad.load_test_transactions(
             experiment_name=self.experiment_name,
-            dataset=self.get_dataset_name(), based_on=self.based_on,
+            dataset=self.get_dataset_name(), split_methodology=self.split_methodology,
             trial=trial, fold=fold
         )
 
@@ -286,7 +286,7 @@ class Dataset:
         """
         self.items = SaveAndLoad.load_clean_items(
             experiment_name=self.experiment_name,
-            dataset=self.get_dataset_name(), based_on=self.based_on
+            dataset=self.get_dataset_name(), split_methodology=self.split_methodology
         )
 
     def load_clean_dataset(self):
@@ -318,7 +318,7 @@ class Dataset:
     def dataset_location(self):
         self.clean_dataset_dir = "/".join(
             [PathDirFile.DATA_DIR, self.experiment_name,
-             "datasets", self.get_dataset_name(), self.based_on]
+             "datasets", self.get_dataset_name(), self.split_methodology]
         )
 
     def create_clean_dir(self):
@@ -343,16 +343,16 @@ class Dataset:
         """
         Choosing the pre-processing method
         """
-        if self.based_on == Label.TIME_SINGLE_SPLIT:
-            self.mining_data_and_create_fold_based_on_time()
-        elif self.based_on == Label.CVTT:
-            self.mining_data_and_create_fold_based_on_cvtt()
-        elif self.based_on == Label.CROSS_VALIDATION:
+        if self.split_methodology == Label.TIME_SINGLE_SPLIT:
+            self.mining_data_and_create_fold_split_methodology_time()
+        elif self.split_methodology == Label.CVTT:
+            self.mining_data_and_create_fold_split_methodology_cvtt()
+        elif self.split_methodology == Label.CROSS_VALIDATION:
             self.mining_data_and_create_fold()
-        elif self.based_on == Label.CROSS_TRAIN_VALIDATION_TEST:
-            self.mining_data_and_create_fold_based_on_tvt()
+        elif self.split_methodology == Label.CROSS_TRAIN_VALIDATION_TEST:
+            self.mining_data_and_create_fold_split_methodology_tvt()
         else:
-            raise f"Invalid based_on value! {self.based_on} does not exists!"
+            raise f"Invalid split_methodology value! {self.split_methodology} does not exists!"
 
     def clean_data(self):
         """
@@ -377,7 +377,7 @@ class Dataset:
     # ######################## K-fold Cross Validation Train-Validation-test ##################### #
     # ############################################################################################ #
 
-    def mining_data_and_create_fold_based_on_tvt(self):
+    def mining_data_and_create_fold_split_methodology_tvt(self):
         """
         The raw dataset is preprocessed and the clean dataset produce n_trials with n_folds.
         """
@@ -386,9 +386,9 @@ class Dataset:
         # Clean and filter the data
         self.clean_data()
         # Creating Folds
-        self.create_folds_based_on_tvt()
+        self.create_folds_split_methodology_tvt()
 
-    def create_folds_based_on_tvt(self) -> None:
+    def create_folds_split_methodology_tvt(self) -> None:
         """
         Create all folds to be used by the system.
         The clean dataset produce n_trials with n_folds.
@@ -470,7 +470,7 @@ class Dataset:
     # ################################## Sequential Validation ################################### #
     # ############################################################################################ #
 
-    def mining_data_and_create_fold_based_on_time(self):
+    def mining_data_and_create_fold_split_methodology_time(self):
         """
         The raw dataset is preprocessed and the clean dataset produce n_trials with n_folds.
         """
@@ -478,9 +478,9 @@ class Dataset:
         # Clean and filter the data
         self.clean_data()
         # Creating Folds
-        self.create_dataset_based_on_time()
+        self.create_dataset_split_methodology_time()
 
-    def create_dataset_based_on_time(self) -> None:
+    def create_dataset_split_methodology_time(self) -> None:
         """
         Create all folds to be used by the system.
         The clean dataset produce n_trials with n_folds.
@@ -591,7 +591,7 @@ class Dataset:
     # ################################## CVTT Cross Validation ################################### #
     # ############################################################################################ #
 
-    def mining_data_and_create_fold_based_on_cvtt(self):
+    def mining_data_and_create_fold_split_methodology_cvtt(self):
         """
         The raw dataset is preprocessed and the clean dataset produce n_trials with n_folds.
         """
@@ -599,9 +599,9 @@ class Dataset:
         # Clean and filter the data
         self.clean_data()
         # Creating Folds
-        self.create_fold_based_on_cvtt()
+        self.create_fold_split_methodology_cvtt()
 
-    def create_fold_based_on_cvtt(self) -> None:
+    def create_fold_split_methodology_cvtt(self) -> None:
         """
         Create all folds to be used by the system.
         The clean dataset produce n_trials with n_folds.

@@ -16,10 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 def starting_postprocessing(
-        experiment_name: str, based_on: str,
+        experiment_name: str, split_methodology: str,
         recommender: str, fold: int, trial: int, dataset: str,
         tradeoff: str, distribution: str, calibration: str, relevance: str,
-        weight: str, selector: str, list_size: int, alpha: int, d: int, checkpoint: str
+        weight: str, selector: str, list_size: int, alpha: int, d: int, checkpoint: str,
+        distribution_class: str
 ) -> None:
     """
     TODO: Docstring
@@ -31,27 +32,29 @@ def starting_postprocessing(
     # )
     system_name = "-".join([
         experiment_name,
-        dataset, based_on, 'trial-' + str(trial), 'fold-' + str(fold), recommender,
-        tradeoff, distribution, relevance, selector, calibration, tradeoff
+        dataset, split_methodology, 'trial-' + str(trial), 'fold-' + str(fold), recommender,
+        tradeoff, distribution, distribution_class, relevance, selector, calibration, tradeoff
     ])
 
     if checkpoint == "YES" and CheckpointVerification.unit_step4_verification(
-            experiment_name=experiment_name, based_on=based_on,
+            experiment_name=experiment_name, split_methodology=split_methodology,
             dataset=dataset, trial=trial, fold=fold, recommender=recommender,
             tradeoff=tradeoff, distribution=distribution, fairness=calibration,
-            relevance=relevance, tradeoff_weight=weight, select_item=selector
+            relevance=relevance, tradeoff_weight=weight, select_item=selector,
+            distribution_class=distribution_class
     ):
         logger.info(">> Already Done... " + system_name)
     else:
         try:
             # Instancing the post-processing
             pierre = PostProcessingStep(
-                experiment_name=experiment_name, based_on=based_on,
+                experiment_name=experiment_name, split_methodology=split_methodology,
                 recommender=recommender, dataset_name=dataset, trial=trial, fold=fold,
                 tradeoff_component=tradeoff, distribution_component=distribution,
                 fairness_component=calibration, relevance_component=relevance,
                 tradeoff_weight_component=weight, selector_component=selector,
-                list_size=list_size, alpha=alpha, d=d
+                list_size=list_size, alpha=alpha, d=d,
+                distribution_class=distribution_class
             )
             logger.info(">> Running... " + system_name)
             pierre.run()
@@ -110,7 +113,7 @@ class PierreStep4(Step):
 
     def main(self) -> None:
         combination = [
-            [self.experimental_settings['experiment_name']], [self.experimental_settings['based_on']],
+            [self.experimental_settings['experiment_name']], [self.experimental_settings["split_methodology"]],
             self.experimental_settings['recommender'],
             self.experimental_settings['tradeoff'], self.experimental_settings['relevance'],
             self.experimental_settings['distribution'], self.experimental_settings['selector'],
@@ -119,6 +122,7 @@ class PierreStep4(Step):
             self.experimental_settings['d'], [self.experimental_settings["checkpoint"]],
             self.experimental_settings['dataset'],
             self.experimental_settings['fold'], self.experimental_settings['trial'],
+            self.experimental_settings['distribution_class'],
         ]
 
         system_combination = list(itertools.product(*combination))
@@ -130,22 +134,23 @@ class PierreStep4(Step):
                 backend="multiprocessing", prefer="processes"
             )(
                 delayed(starting_postprocessing)(
-                    experiment_name=experiment_name, based_on=based_on,
+                    experiment_name=experiment_name, split_methodology=split_methodology,
                     recommender=recommender, dataset=dataset, trial=trial, fold=fold,
                     tradeoff=tradeoff, relevance=relevance, distribution=distribution,
                     selector=selector, weight=weight, calibration=calibration,
-                    list_size=list_size, alpha=alpha, d=d, checkpoint=checkpoint
-                ) for experiment_name, based_on,
-                recommender, tradeoff, relevance, distribution, selector, weight, calibration, list_size, alpha, d, checkpoint, dataset, fold, trial
+                    list_size=list_size, alpha=alpha, d=d, checkpoint=checkpoint,
+                    distribution_class=distribution_class
+                ) for experiment_name, split_methodology,
+                recommender, tradeoff, relevance, distribution, selector, weight, calibration, list_size, alpha, d, checkpoint, dataset, fold, trial, distribution_class
                 in system_combination
             )
         elif self.experimental_settings['multiprocessing'] == "starmap":
             process_args = []
-            for experiment_name, based_on, recommender, tradeoff, relevance, distribution, selector, weight, calibration, list_size, alpha, d, checkpoint, dataset, fold, trial in system_combination:
+            for experiment_name, split_methodology, recommender, tradeoff, relevance, distribution, selector, weight, calibration, list_size, alpha, d, checkpoint, dataset, fold, trial, distribution_class in system_combination:
                 process_args.append((
-                    experiment_name, based_on,
+                    experiment_name, split_methodology,
                     recommender, fold, trial, dataset, tradeoff, distribution, calibration, relevance, weight, selector,
-                    list_size, alpha, d, checkpoint))
+                    list_size, alpha, d, checkpoint, distribution_class))
             pool = multiprocessing.Pool(processes=self.experimental_settings["n_jobs"])
             pool.starmap(starting_postprocessing, process_args)
             pool.close()

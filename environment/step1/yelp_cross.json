@@ -1,7 +1,7 @@
 {
   "experiment_name": "COMPARING_MODELS",
   "opt": "SPLIT",
-  "based_on": "CROSS_TRAIN_VALIDATION_TEST",
+  "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
   "dataset": "yelp",
   "n_folds": 3,
   "n_trials": 1,

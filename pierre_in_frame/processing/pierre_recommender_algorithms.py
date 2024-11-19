@@ -18,7 +18,7 @@ class PierreRecommenderAlgorithm:
             self,
             experiment_name: str,
             recommender_name: str, dataset_name: str, fold: int, trial: int,
-            list_size: int, based_on: str, metric: str = "map"
+            list_size: int, split_methodology: str, metric: str = "map"
     ):
         """
         Class constructor.
@@ -35,7 +35,7 @@ class PierreRecommenderAlgorithm:
         self.trial = trial
         self.recommender = None
         self.list_size = list_size
-        self.based_on = based_on
+        self.split_methodology = split_methodology
         self.experiment_name = experiment_name
 
         if self.recommender_name in Label.PIERRE_RECOMMENDERS_NO_PARAMS:
@@ -50,7 +50,7 @@ class PierreRecommenderAlgorithm:
         else:
             # Load the surprise recommender algorithm
             full_params = SaveAndLoad.load_hyperparameters_recommender(
-                experiment_name=self.experiment_name, based_on=self.based_on,
+                experiment_name=self.experiment_name, split_methodology=self.split_methodology,
                 dataset=self.dataset.system_name, algorithm=self.recommender_name
             )
             if self.recommender_name == Label.DEEP_AE:
@@ -78,9 +78,9 @@ class PierreRecommenderAlgorithm:
         logger.info(">>> Fit the recommender algorithm")
         self.dataset.set_environment(
             experiment_name=self.experiment_name,
-            based_on=self.based_on
+            split_methodology=self.split_methodology
         )
-        if self.based_on in Label.BASED_ON_VALIDATION:
+        if self.split_methodology in Label.BASED_ON_VALIDATION:
             users_preferences = self.dataset.get_full_train_transactions(
                 fold=self.fold, trial=self.trial
             )
@@ -96,7 +96,7 @@ class PierreRecommenderAlgorithm:
         # Save all recommendation lists
         logger.info(">>> Saving...")
         SaveAndLoad.save_candidate_items(
-            experiment_name=self.experiment_name, based_on=self.based_on,
+            experiment_name=self.experiment_name, split_methodology=self.split_methodology,
             data=rec_lists_df,
             dataset=self.dataset.system_name, algorithm=self.recommender_name,
             fold=self.fold, trial=self.trial

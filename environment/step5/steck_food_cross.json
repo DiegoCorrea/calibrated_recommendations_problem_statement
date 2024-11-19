@@ -1,16 +1,16 @@
 {
   "experiment_name": "COMPARING_MODELS",
-  "based_on": "CVTT",
+  "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
   "multiprocessing": "joblib",
   "n_jobs": 61,
   "checkpoint": "NO",
   "opt": "EVALUATION_METRICS",
   "metric": [
-    "MACE",
-    "MAP"
+    "MAP",
+    "MACE"
   ],
   "recommender": ["BPR", "ALS", "ITEMKNN", "SVD", "POPULARITY_REC"],
-  "dataset": ["yelp"],
+  "dataset": ["food"],
   "fold": [1, 2, 3],
   "trial": [1],
   "tradeoff": ["LIN"],

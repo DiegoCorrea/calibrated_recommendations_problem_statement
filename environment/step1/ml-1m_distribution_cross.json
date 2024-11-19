@@ -3,10 +3,14 @@
   "multiprocessing": "starmap",
   "n_jobs": 63,
   "opt": "DISTRIBUTION",
-  "based_on": "CROSS_TRAIN_VALIDATION_TEST",
+  "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
   "dataset": "ml-1m",
   "distribution": [
     "CWS"
+  ],
+  "distribution_class": [
+    "POP",
+    "GENRE"
   ],
   "fold": [1, 2, 3],
   "trial": [1]

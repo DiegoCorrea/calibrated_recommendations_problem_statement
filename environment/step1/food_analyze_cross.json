@@ -2,7 +2,7 @@
   "experiment_name": "COMPARING_MODELS",
   "opt": "ANALYZE",
   "dataset": "food",
-  "based_on": "CROSS_TRAIN_VALIDATION_TEST",
-  "fold": [1, 2, 3],
-  "trial": [1]
+  "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
+  "trial": [1],
+  "fold": [1, 2, 3]
 }

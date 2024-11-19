@@ -14,13 +14,13 @@ class DatasetChart:
     This class administrates the dataset chart generation
     """
 
-    def __init__(self, dataset_name, experiment_name, based_on):
+    def __init__(self, dataset_name, experiment_name, split_methodology):
         self.dataset = RegisteredDataset.load_dataset(dataset_name)
         self.experiment_name = experiment_name
-        self.based_on = based_on
+        self.split_methodology = split_methodology
         self.dataset.set_environment(
             experiment_name=experiment_name,
-            based_on=based_on
+            split_methodology=split_methodology
         )
 
     def item_long_tail(self):
@@ -100,5 +100,5 @@ class DatasetChart:
             distribution1=raw_dist_df, distribution2=clean_dist_df, dataset=self.dataset.dir_name,
             label1="Raw", label2="Cleaned", ylabel="Total Times",
             experiment_name=self.experiment_name,
-            based_on=self.based_on
+            split_methodology=self.split_methodology
         )

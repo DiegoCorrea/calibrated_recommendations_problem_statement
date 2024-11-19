@@ -1,15 +1,16 @@
-from copy import deepcopy
-import multiprocessing
-import implicit
 import itertools
-import pandas as pd
+import multiprocessing
 import random
-import threadpoolctl
-from joblib import Parallel, delayed
-from scipy import sparse
+from copy import deepcopy
 from statistics import mean
 
+import implicit
+import pandas as pd
+import threadpoolctl
+from joblib import Parallel, delayed
 from scikit_pierre.metrics.evaluation import MeanAveragePrecision, MeanReciprocalRank
+from scipy import sparse
+
 from searches.base_search import BaseSearch
 from searches.parameters import ImplicitParams
 from settings.labels import Label
@@ -22,14 +23,15 @@ class ImplicitGridSearch(BaseSearch):
             algorithm: str,
             dataset_name: str, trial: int = 1, fold: int = 1,
             n_jobs: int = 1, n_threads: int = 1, list_size: int = 10, n_inter: int = 50,
-            based_on: str = "RANDOM", multiprocessing_lib: str = Label.JOBLIB
+            split_methodology: str = "RANDOM", multiprocessing_lib: str = Label.JOBLIB
     ):
         global OPENBLAS_NUM_THREADS
         OPENBLAS_NUM_THREADS = n_threads
         threadpoolctl.threadpool_limits(n_threads, "blas")
         super().__init__(
             algorithm=algorithm, dataset_name=dataset_name, trial=trial, fold=fold,
-            n_jobs=n_jobs, list_size=list_size, n_inter=n_inter, based_on=based_on,
+            n_jobs=n_jobs, list_size=list_size, n_inter=n_inter,
+            split_methodology=split_methodology,
             experiment_name=experiment_name
         )
 
@@ -81,7 +83,7 @@ class ImplicitGridSearch(BaseSearch):
     def fit_als(
             factors, regularization, alpha, iterations, random_state,
             train_list, valid_list, list_size,
-            based_on, experiment_name, algorithm, dataset_name
+            split_methodology, experiment_name, algorithm, dataset_name
     ):
         map_value = []
         mrr_value = []
@@ -120,14 +122,14 @@ class ImplicitGridSearch(BaseSearch):
         }
         ImplicitGridSearch.defining_metric_and_save_during_run(
             dataset_name=dataset_name, algorithm=algorithm, params=params,
-            based_on=based_on, experiment_name=experiment_name
+            split_methodology=split_methodology, experiment_name=experiment_name
         )
 
     @staticmethod
     def fit_bpr(
             factors, regularization, learning_rate, iterations, random_state,
             train_list, valid_list, list_size,
-            based_on, experiment_name, algorithm, dataset_name
+            split_methodology, experiment_name, algorithm, dataset_name
     ):
         map_value = []
         mrr_value = []
@@ -166,13 +168,13 @@ class ImplicitGridSearch(BaseSearch):
         }
         ImplicitGridSearch.defining_metric_and_save_during_run(
             dataset_name=dataset_name, algorithm=algorithm, params=params,
-            based_on=based_on, experiment_name=experiment_name
+            split_methodology=split_methodology, experiment_name=experiment_name
         )
 
     @staticmethod
     def fit_item_knn(
             k, train_list, valid_list, list_size,
-            based_on, experiment_name, algorithm, dataset_name
+            split_methodology, experiment_name, algorithm, dataset_name
     ):
         map_value = []
         mrr_value = []
@@ -206,7 +208,7 @@ class ImplicitGridSearch(BaseSearch):
         }
         ImplicitGridSearch.defining_metric_and_save_during_run(
             dataset_name=dataset_name, algorithm=algorithm, params=params,
-            based_on=based_on, experiment_name=experiment_name
+            split_methodology=split_methodology, experiment_name=experiment_name
         )
 
     def get_als_params(self):
@@ -273,7 +275,7 @@ class ImplicitGridSearch(BaseSearch):
                     process_args.append((
                         factors, regularization, alpha, iterations, random_state,
                         deepcopy(self.train_list), deepcopy(self.valid_list), self.list_size,
-                        deepcopy(self.based_on), deepcopy(self.experiment_name),
+                        deepcopy(self.split_methodology), deepcopy(self.experiment_name),
                         deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
                     ))
                 pool = multiprocessing.Pool(processes=self.n_jobs)
@@ -298,7 +300,8 @@ class ImplicitGridSearch(BaseSearch):
                         experiment_name=deepcopy(self.experiment_name),
                         algorithm=deepcopy(self.algorithm),
                         dataset_name=deepcopy(self.dataset.system_name)
-                    ) for factors, regularization, learning_rate, iterations, random_state, num_threads
+                    ) for
+                    factors, regularization, learning_rate, iterations, random_state, num_threads
                     in params_to_use
                 )
             else:
@@ -307,7 +310,7 @@ class ImplicitGridSearch(BaseSearch):
                     process_args.append((
                         factors, regularization, learning_rate, iterations, random_state,
                         deepcopy(self.train_list), deepcopy(self.valid_list), self.list_size,
-                        deepcopy(self.based_on), deepcopy(self.experiment_name),
+                        deepcopy(self.split_methodology), deepcopy(self.experiment_name),
                         deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
                     ))
                 pool = multiprocessing.Pool(processes=self.n_jobs)
@@ -337,7 +340,7 @@ class ImplicitGridSearch(BaseSearch):
                     process_args.append((
                         k,
                         deepcopy(self.train_list), deepcopy(self.valid_list), self.list_size,
-                        deepcopy(self.based_on), deepcopy(self.experiment_name),
+                        deepcopy(self.split_methodology), deepcopy(self.experiment_name),
                         deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
                     ))
                 pool = multiprocessing.Pool(processes=self.n_jobs)

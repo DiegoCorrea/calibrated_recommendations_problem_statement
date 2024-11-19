@@ -1,7 +1,7 @@
 {
   "experiment_name": "COMPARING_MODELS",
   "opt": "SPLIT",
-  "based_on": "CVTT",
+  "split_methodology": "CVTT",
   "dataset": "ml-1m",
   "n_folds": 3,
   "n_trials": 1,

@@ -1,16 +1,16 @@
 {
   "experiment_name": "COMPARING_MODELS",
-  "based_on": "CROSS_TRAIN_VALIDATION_TEST",
+  "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
   "multiprocessing": "joblib",
   "n_jobs": 61,
   "checkpoint": "NO",
   "opt": "EVALUATION_METRICS",
   "metric": [
-    "MAP",
-    "MACE"
+    "MACE",
+    "MAP"
   ],
   "recommender": ["BPR", "ALS", "ITEMKNN", "SVD", "POPULARITY_REC"],
-  "dataset": ["food"],
+  "dataset": ["yelp"],
   "fold": [1, 2, 3],
   "trial": [1],
   "tradeoff": ["LIN"],

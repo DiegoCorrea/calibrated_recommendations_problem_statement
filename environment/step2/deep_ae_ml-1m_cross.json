@@ -2,7 +2,7 @@
   "experiment_name": "COMPARING_MODELS",
   "opt": "RECOMMENDER",
   "multiprocessing": "starmap",
-  "based_on": "CROSS_TRAIN_VALIDATION_TEST",
+  "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
   "n_inter": 21,
   "n_jobs": 1,
   "n_threads": 21,

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def applying_evaluation_metrics(
-        experiment_name: str, based_on: str,
+        experiment_name: str, split_methodology: str,
         metrics: list, recommender: str, dataset: str, trial: int, fold: int,
         distribution: str, fairness: str, relevance: str, weight: str, tradeoff: str, selector: str,
         checkpoint: str
@@ -25,7 +25,7 @@ def applying_evaluation_metrics(
     Function to apply the evaluation metrics.
     """
     instance = ApplyingMetric(
-        experiment_name=experiment_name, based_on=based_on,
+        experiment_name=experiment_name, split_methodology=split_methodology,
         recommender=recommender, dataset=dataset, trial=trial, fold=fold,
         distribution=distribution, fairness=fairness, relevance=relevance,
         weight=weight, tradeoff=tradeoff, selector=selector, checkpoint=checkpoint
@@ -89,7 +89,7 @@ def applying_evaluation_metrics(
 
 
 def starting_cluster(
-        cluster: str, experiment_name: str, based_on: str, recommender: str, dataset: str, trial: int, fold: int,
+        cluster: str, experiment_name: str, split_methodology: str, recommender: str, dataset: str, trial: int, fold: int,
         distribution: str, fairness: str, relevance: str, weight: str, tradeoff: str, selector: str,
         checkpoint: str
 ):
@@ -112,7 +112,7 @@ def starting_cluster(
             cluster=cluster, metric=Label.JACCARD_SCORE, recommender=recommender,
             distribution=distribution, fairness=fairness, relevance=relevance,
             weight=weight, tradeoff=tradeoff, selector=selector,
-            experiment_name=experiment_name, based_on=based_on
+            experiment_name=experiment_name, split_methodology=split_methodology
     ):
         logger.info(">> Already Done... " + system_name)
         return "Already Done"
@@ -190,7 +190,7 @@ class PierreStep5(Step):
 
     def metrics_parallelization(self):
         combination = [
-            [self.experimental_settings['experiment_name']], [self.experimental_settings['based_on']],
+            [self.experimental_settings['experiment_name']], [self.experimental_settings["split_methodology"]],
             self.experimental_settings['recommender'], self.experimental_settings['dataset'],
             self.experimental_settings['trial'], self.experimental_settings['fold'],
             self.experimental_settings['distribution'], self.experimental_settings['fairness'],
@@ -207,19 +207,19 @@ class PierreStep5(Step):
             )(
                 delayed(applying_evaluation_metrics)(
                     metrics=self.experimental_settings['metric'],
-                    experiment_name=experiment_name, based_on=based_on,
+                    experiment_name=experiment_name, split_methodology=split_methodology,
                     recommender=recommender, dataset=dataset, trial=trial, fold=fold,
                     distribution=distribution, fairness=fairness, relevance=relevance,
                     weight=weight, tradeoff=tradeoff, selector=selector, checkpoint=checkpoint
                 ) for
-                experiment_name, based_on, recommender, dataset, trial, fold, distribution, fairness, relevance, weight, tradeoff, selector, checkpoint
+                experiment_name, split_methodology, recommender, dataset, trial, fold, distribution, fairness, relevance, weight, tradeoff, selector, checkpoint
                 in process_combination
             )
         elif self.experimental_settings['multiprocessing'] == "starmap":
             process_args = []
-            for experiment_name, based_on, recommender, tradeoff, relevance, distribution, selector, weight, calibration, list_size, alpha, d, checkpoint, dataset, fold, trial in process_combination:
+            for experiment_name, split_methodology, recommender, tradeoff, relevance, distribution, selector, weight, calibration, list_size, alpha, d, checkpoint, dataset, fold, trial in process_combination:
                 process_args.append((
-                    experiment_name, based_on, recommender, fold, trial, dataset, tradeoff, distribution, calibration, relevance, weight, selector,
+                    experiment_name, split_methodology, recommender, fold, trial, dataset, tradeoff, distribution, calibration, relevance, weight, selector,
                     list_size, alpha, d, checkpoint
                 ))
             pool = multiprocessing.Pool(processes=self.experimental_settings["n_jobs"])
@@ -237,7 +237,7 @@ class PierreStep5(Step):
         """
         combination = [
             self.experimental_settings['cluster'],
-            [self.experimental_settings['experiment_name']], [self.experimental_settings['based_on']],
+            [self.experimental_settings['experiment_name']], [self.experimental_settings["split_methodology"]],
             self.experimental_settings['recommender'], self.experimental_settings['dataset'],
             self.experimental_settings['trial'], self.experimental_settings['fold'],
             self.experimental_settings['distribution'], self.experimental_settings['fairness'],
@@ -249,12 +249,12 @@ class PierreStep5(Step):
 
         Parallel(n_jobs=self.experimental_settings['n_jobs'])(
             delayed(starting_cluster)(
-                cluster=cluster, experiment_name=experiment_name, based_on=based_on,
+                cluster=cluster, experiment_name=experiment_name, split_methodology=split_methodology,
                 recommender=recommender, dataset=dataset, trial=trial, fold=fold,
                 distribution=distribution, fairness=fairness, relevance=relevance,
                 weight=weight, tradeoff=tradeoff, selector=selector, checkpoint=checkpoint
             ) for
-            cluster, experiment_name, based_on, recommender, dataset, trial, fold, distribution, fairness, relevance, weight, tradeoff, selector, checkpoint
+            cluster, experiment_name, split_methodology, recommender, dataset, trial, fold, distribution, fairness, relevance, weight, tradeoff, selector, checkpoint
             in list(itertools.product(*combination))
         )
 

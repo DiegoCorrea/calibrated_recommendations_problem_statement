@@ -3,6 +3,8 @@ import json
 
 import os
 from datetime import datetime
+import random
+from math import ceil
 
 import pandas as pd
 import numpy as np
@@ -45,6 +47,7 @@ class Yelp(Dataset):
         self.cut_value = 4
         self.item_cut_value = 5
         self.profile_len_cut_value = 100
+        self.half_users = True
 
     # ######################################### #
     # ############# Transactions ############## #
@@ -86,6 +89,17 @@ class Yelp(Dataset):
             raw_transactions[Label.ITEM_ID].isin(self.items[Label.ITEM_ID].tolist())
         ].drop_duplicates(subset=[Label.USER_ID, Label.ITEM_ID], keep='last')
 
+        if self.half_users:
+            random.seed(0)
+            total_users = filtered_raw_transactions[Label.USER_ID].nunique()
+            half_users_id = random.choices(
+                filtered_raw_transactions[Label.USER_ID].unique().tolist(),
+                k=ceil(total_users/2)
+            )
+            filtered_raw_transactions = filtered_raw_transactions[
+                filtered_raw_transactions[Label.USER_ID].isin(half_users_id)
+            ]
+
         # Cut users and set the new data into the instance.
         self.set_transactions(
             new_transactions=Yelp.cut_users(
@@ -100,7 +114,7 @@ class Yelp(Dataset):
         )
         self.set_transactions(
             new_transactions=Yelp.cut_users(
-                transactions=filtered_raw_transactions, item_cut_value=self.cut_value,
+                transactions=self.transactions, item_cut_value=self.cut_value,
                 profile_len_cut_value=self.profile_len_cut_value
             )
         )

@@ -74,20 +74,20 @@ class PathDirFile:
 
     @staticmethod
     def dataset_path(
-            experiment_name: str, dataset: str, based_on: str, filename: str) -> str:
+            experiment_name: str, dataset: str, split_methodology: str, filename: str) -> str:
         f"""
         This method is to lead with the distribution file directory.
 
         :param experiment_name: A string that`s representing the experiment name.
         :param dataset: A string that's representing the dataset name.
-        :param based_on: A string that`s representing the type of split.
+        :param split_methodology: A string that`s representing the type of split.
         :param filename: The distribution filename.
 
         :return: A string like 
-        data/{experiment_name}/datasets/{dataset}/{based_on}/{filename}
+        data/{experiment_name}/datasets/{dataset}/{split_methodology}/{filename}
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, based_on
+            PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, split_methodology
         ])
         if not os.path.exists(save_in_dir):
             os.makedirs(save_in_dir)
@@ -95,7 +95,7 @@ class PathDirFile:
 
     @staticmethod
     def dataset_fold_path(
-            experiment_name: str, dataset: str, based_on: str,
+            experiment_name: str, dataset: str, split_methodology: str,
             trial: int, fold: int, filename: str
     ) -> str:
         f"""
@@ -103,16 +103,16 @@ class PathDirFile:
 
         :param experiment_name: A string that`s representing the experiment name.
         :param dataset: A string that's representing the dataset name.
-        :param based_on: A string that`s representing the type of split.
+        :param split_methodology: A string that`s representing the type of split.
         :param trial: The trial number.
         :param fold: The fold number.
         :param filename: The distribution filename.
 
         :return: A string like 
-        data/{experiment_name}/datasets/{dataset}/{based_on}/trial-{trial}/fold-{fold}/{filename}
+        data/{experiment_name}/datasets/{dataset}/{split_methodology}/trial-{trial}/fold-{fold}/{filename}
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, based_on,
+            PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, split_methodology,
             'trial-' + str(trial), 'fold-' + str(fold)
         ])
         if not os.path.exists(save_in_dir):
@@ -121,25 +121,26 @@ class PathDirFile:
 
     @staticmethod
     def dataset_distribution_path(
-            experiment_name: str, dataset: str, based_on: str,
-            trial: int, fold: int, filename: str
+            experiment_name: str, dataset: str, split_methodology: str,
+            trial: int, fold: int, distribution_class: str, filename: str
     ) -> str:
         f"""
         This method is to lead with the distribution file directory.
 
         :param experiment_name: A string that`s representing the experiment name.
         :param dataset: A string that's representing the dataset name.
-        :param based_on: A string that`s representing the type of split.
+        :param split_methodology: A string that`s representing the type of split.
         :param trial: The trial number.
         :param fold: The fold number.
         :param filename: The distribution filename.
 
         :return: A string like 
-        data/{experiment_name}/datasets/{dataset}/{based_on}/trial-{trial}/fold-{fold}/distributions/{filename}
+        data/{experiment_name}/datasets/{dataset}/{split_methodology}/
+        trial-{trial}/fold-{fold}/distributions/{distribution_class}/{filename}
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, based_on,
-            'trial-' + str(trial), 'fold-' + str(fold), "distributions"
+            PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, split_methodology,
+            'trial-' + str(trial), 'fold-' + str(fold), "distributions", distribution_class
         ])
         if not os.path.exists(save_in_dir):
             os.makedirs(save_in_dir)
@@ -147,20 +148,20 @@ class PathDirFile:
 
     @staticmethod
     def item_class_one_hot_encode_file(
-            experiment_name: str, dataset: str, based_on: str, filename: str) -> str:
+            experiment_name: str, dataset: str, split_methodology: str, filename: str) -> str:
         f"""
         This method is to lead with the distribution file directory.
 
         :param experiment_name: A string that`s representing the experiment name.
         :param dataset: A string that's representing the dataset name.
-        :param based_on: A string that`s representing the type of split.
+        :param split_methodology: A string that`s representing the type of split.
         :param filename: The distribution filename.
 
         :return: A string like 
-        data/{experiment_name}/datasets/{dataset}/{based_on}/{filename}
+        data/{experiment_name}/datasets/{dataset}/{split_methodology}/{filename}
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, based_on
+            PathDirFile.DATA_DIR, experiment_name, "datasets", dataset, split_methodology
         ])
         if not os.path.exists(save_in_dir):
             os.makedirs(save_in_dir)
@@ -168,19 +169,19 @@ class PathDirFile:
 
     @staticmethod
     def dataset_analyze_file(
-            experiment_name: str, dataset: str, based_on: str, filename: str) -> str:
+            experiment_name: str, dataset: str, split_methodology: str, filename: str) -> str:
         f"""
         This method is to lead with the distribution file directory.
 
         :param experiment_name: A string that represents the experiment name.
         :param dataset: A string that represents the dataset name.
-        :param based_on: A string that represents the type of split.
+        :param split_methodology: A string that represents the type of split.
         :param filename: The distribution filename.
 
         :return: A string like results/{experiment_name}/analyze/{dataset}/{filename}
         """
         save_in_dir = "/".join([
-            PathDirFile.RESULTS_DIR, experiment_name, "analyze", dataset, based_on
+            PathDirFile.RESULTS_DIR, experiment_name, "analyze", dataset, split_methodology
         ])
         if not os.path.exists(save_in_dir):
             os.makedirs(save_in_dir)
@@ -191,21 +192,21 @@ class PathDirFile:
     # ########################################################################################### #
     @staticmethod
     def set_recommender_hyperparameter_file(
-            opt: str, experiment_name: str, dataset: str, based_on: str, algorithm: str) -> str:
+            opt: str, experiment_name: str, dataset: str, split_methodology: str, algorithm: str) -> str:
         f"""
         Method to set the file path, which deal with the hyperparameter values founded in the Search Step.
 
         :param opt: A string that represents the algorithm type RECOMMENDER OR CLUSTER.
         :param experiment_name: A string that`s representing the experiment name.
         :param dataset: A string that's representing the dataset name.
-        :param based_on: A string that`s representing the type of split.
+        :param split_methodology: A string that`s representing the type of split.
         :param algorithm: A string that's representing the recommender algorithm name.
 
         :return: A string like 
-         data/{experiment_name}/hyperparameters/{dataset}/{based_on}/{opt}/{algorithm}.json.
+         data/{experiment_name}/hyperparameters/{dataset}/{split_methodology}/{opt}/{algorithm}.json.
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, "hyperparameters", dataset, based_on,
+            PathDirFile.DATA_DIR, experiment_name, "hyperparameters", dataset, split_methodology,
             opt
         ])
         if not os.path.exists(save_in_dir):
@@ -214,28 +215,28 @@ class PathDirFile:
 
     @staticmethod
     def get_recommender_hyperparameter_file(
-            opt: str, experiment_name: str, dataset: str, based_on: str, algorithm: str) -> str:
+            opt: str, experiment_name: str, dataset: str, split_methodology: str, algorithm: str) -> str:
         f"""
         Method to get the file path, which deal with the hyperparameter values founded in the Search Step.
         
         :param opt: A string that represents the algorithm type RECOMMENDER OR CLUSTER.
         :param experiment_name: A string that represents the experiment name.
-        :param based_on: A string that represents the type of split.
+        :param split_methodology: A string that represents the type of split.
         :param dataset: A string that represents the dataset name.
         :param algorithm: A string that represents the recommender algorithm name.
 
         :return: A string like 
-         data/{experiment_name}/hyperparameters/{dataset}/{based_on}/{opt}/{algorithm}.json.
+         data/{experiment_name}/hyperparameters/{dataset}/{split_methodology}/{opt}/{algorithm}.json.
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, "hyperparameters", dataset, based_on,
+            PathDirFile.DATA_DIR, experiment_name, "hyperparameters", dataset, split_methodology,
             opt
         ])
         return "/".join([save_in_dir, algorithm + ".json"])
 
     @staticmethod
     def set_conformity_hyperparameter_file(
-            opt: str, experiment_name: str, dataset: str, based_on: str,
+            opt: str, experiment_name: str, dataset: str, split_methodology: str,
             cluster: str, distribution: str) -> str:
         f"""
         Method to set the file path, which deal with the hyperparameter values founded in the Search Step.
@@ -244,14 +245,14 @@ class PathDirFile:
         :param distribution: A string that represents the distribution derivation name.
         :param experiment_name: A string that represents the experiment name.
         :param dataset: A string that represents the dataset name.
-        :param based_on: A string that represents the type of split.
+        :param split_methodology: A string that represents the type of split.
         :param cluster: A string that represents the name of the cluster algorithm.
 
         :return: A string like 
-        data/{experiment_name}/hyperparameters/{dataset}/{based_on}/{opt}/{distribution}/{cluster}.json.
+        data/{experiment_name}/hyperparameters/{dataset}/{split_methodology}/{opt}/{distribution}/{cluster}.json.
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, "hyperparameters", dataset, based_on,
+            PathDirFile.DATA_DIR, experiment_name, "hyperparameters", dataset, split_methodology,
             opt, distribution
         ])
         if not os.path.exists(save_in_dir):
@@ -260,7 +261,7 @@ class PathDirFile:
 
     @staticmethod
     def get_conformity_hyperparameter_file(
-            opt: str, experiment_name: str, dataset: str, based_on: str,
+            opt: str, experiment_name: str, dataset: str, split_methodology: str,
             cluster: str, distribution: str) -> str:
         f"""
         Method to get the file path, which deal with the hyperparameter values founded in the Search Step.
@@ -268,16 +269,16 @@ class PathDirFile:
         :param opt: A string that represents the type of algorithm RECOMMENDER OR CLUSTER.
         :param distribution: The distribution component name.
         :param experiment_name: A string that representing the experiment name.
-        :param based_on: A string that representing the type of split.
+        :param split_methodology: A string that representing the type of split.
         :param dataset: A string that representing the dataset name.
         :param cluster: A string that representing the name of the cluster algorithm.
 
         :return: A string like 
                
-        data/{experiment_name}/hyperparameters/{dataset}/{based_on}/{opt}/{distribution}/{cluster}.json.
+        data/{experiment_name}/hyperparameters/{dataset}/{split_methodology}/{opt}/{distribution}/{cluster}.json.
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, "hyperparameters", dataset, based_on,
+            PathDirFile.DATA_DIR, experiment_name, "hyperparameters", dataset, split_methodology,
             opt, distribution
         ])
         return "/".join([save_in_dir, cluster + ".json"])
@@ -308,24 +309,24 @@ class PathDirFile:
 
     @staticmethod
     def set_candidate_items_file(
-            experiment_name: str, based_on: str,
+            experiment_name: str, split_methodology: str,
             dataset: str, algorithm: str, trial: int, fold: int) -> str:
         f"""
         Method to set the candidate items path, which deal with the candidate items set from the recommender algorithm.
 
         :param experiment_name: A string that`s representing the experiment name.
-        :param based_on: A string that`s representing the type of split.
+        :param split_methodology: A string that`s representing the type of split.
         :param dataset: A string that's representing the dataset name.
         :param algorithm: A string that's representing the recommender algorithm name.
         :param trial: The trial number.
         :param fold: The fold number.
 
         :return: A string like        
-        data/{experiment_name}/candidate_items/{dataset}/{based_on}/
+        data/{experiment_name}/candidate_items/{dataset}/{split_methodology}/
         {algorithm}/trial-{trial}/fold-{fold}/candidate_items.csv.
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, 'candidate_items', dataset, based_on,
+            PathDirFile.DATA_DIR, experiment_name, 'candidate_items', dataset, split_methodology,
             algorithm, 'trial-' + str(trial), 'fold-' + str(fold)
         ])
         if not os.path.exists(save_in_dir):
@@ -334,24 +335,24 @@ class PathDirFile:
 
     @staticmethod
     def get_candidate_items_file(
-            experiment_name: str, based_on: str,
+            experiment_name: str, split_methodology: str,
             dataset: str, algorithm: str, trial: int, fold: int) -> str:
         f"""
         Method to set the candidate items path, which deal with the candidate items set from the recommender algorithm.
 
         :param experiment_name: A string that represents the experiment name.
-        :param based_on: A string that represents the type of split.
+        :param split_methodology: A string that represents the type of split.
         :param dataset: A string that represents the dataset name.
         :param algorithm: A string that represents the algorithm name, can be one of the recommenders or clusters.
         :param trial: The trial number.
         :param fold: The fold number.
 
         :return: A string like
-        data/{experiment_name}/candidate_items/{dataset}/{based_on}/
+        data/{experiment_name}/candidate_items/{dataset}/{split_methodology}/
         {algorithm}/trial-{trial}/fold-{fold}/candidate_items.csv.
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, 'candidate_items', dataset, based_on,
+            PathDirFile.DATA_DIR, experiment_name, 'candidate_items', dataset, split_methodology,
             algorithm, 'trial-' + str(trial), 'fold-' + str(fold)
         ])
         return "/".join([save_in_dir, PathDirFile.CANDIDATE_ITEMS_FILE])
@@ -383,15 +384,16 @@ class PathDirFile:
     # ########################################################################################### #
     @staticmethod
     def set_recommendation_list_file(
-            experiment_name: str, based_on: str,
+            experiment_name: str, split_methodology: str,
             dataset: str, recommender: str, trial: int, fold: int,
             tradeoff: str, distribution: str, fairness: str, relevance: str,
-            tradeoff_weight: str, select_item: str) -> str:
+            tradeoff_weight: str, select_item: str, distribution_class: str
+    ) -> str:
         f"""
         Method to set the file path, which deal with the recommendation lists from the post-processing step.
         
         :param experiment_name: A string that represents the experiment name.
-        :param based_on: A string that represents the type of split.
+        :param split_methodology: A string that represents the type of split.
         :param dataset: A string that's representing the dataset name.
         :param recommender: A string that's representing the recommender algorithm name.
         :param trial: The trial number.
@@ -404,13 +406,13 @@ class PathDirFile:
         :param select_item: The select item algorithm name.
 
         :return: A string like 
-        data/{experiment_name}/recommendation_lists/{dataset}/{based_on}/
-        {recommender}/{tradeoff}/{distribution}/{relevance}/{select_item}/
+        data/{experiment_name}/recommendation_lists/{dataset}/{split_methodology}/
+        {recommender}/{tradeoff}/{distribution}/{distribution_class}/{relevance}/{select_item}/
         {fairness}/{tradeoff_weight}/trial-{trial}/fold-{fold}/
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, 'recommendation_lists', dataset, based_on,
-            recommender, tradeoff, distribution, relevance, select_item,
+            PathDirFile.DATA_DIR, experiment_name, 'recommendation_lists', dataset, split_methodology,
+            recommender, tradeoff, distribution, distribution_class, relevance, select_item,
             fairness, tradeoff_weight, 'trial-' + str(trial), 'fold-' + str(fold)
         ])
         if not os.path.exists(save_in_dir):
@@ -419,15 +421,16 @@ class PathDirFile:
 
     @staticmethod
     def get_recommendation_list_file(
-            experiment_name: str, based_on: str,
+            experiment_name: str, split_methodology: str,
             dataset: str, recommender: str, trial: int, fold: int,
             tradeoff: str, distribution: str, fairness: str, relevance: str,
-            tradeoff_weight: str, select_item: str) -> str:
+            tradeoff_weight: str, select_item: str, distribution_class: str
+    ) -> str:
         f"""
         Method to get the file path, which deal with the recommendation lists from the post-processing step.
         
         :param experiment_name: A string that represents the experiment name.
-        :param based_on: A string that represents the type of split.
+        :param split_methodology: A string that represents the type of split.
         :param dataset: A string that's representing the dataset name.
         :param recommender: A string that's representing the recommender algorithm name.
         :param trial: The trial number.
@@ -440,20 +443,20 @@ class PathDirFile:
         :param select_item: The select item algorithm name.
 
         :return: A string like 
-        data/{experiment_name}/recommendation_lists/{dataset}/{based_on}/
-        {recommender}/{tradeoff}/{distribution}/{relevance}/{select_item}/
+        data/{experiment_name}/recommendation_lists/{dataset}/{split_methodology}/
+        {recommender}/{tradeoff}/{distribution}/{distribution_class}/{relevance}/{select_item}/
         {fairness}/{tradeoff_weight}/trial-{trial}/fold-{fold}/
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, 'recommendation_lists', dataset, based_on,
-            recommender, tradeoff, distribution, relevance, select_item,
+            PathDirFile.DATA_DIR, experiment_name, 'recommendation_lists', dataset, split_methodology,
+            recommender, tradeoff, distribution, distribution_class, relevance, select_item,
             fairness, tradeoff_weight, 'trial-' + str(trial), 'fold-' + str(fold)
         ])
         return "/".join([save_in_dir, PathDirFile.RECOMMENDER_LIST_FILE])
 
     @staticmethod
     def set_log_postprocessing_path(
-            experiment_name: str, based_on: str,
+            experiment_name: str, split_methodology: str,
             dataset: str, recommender: str, trial: int, fold: int,
             tradeoff: str, distribution: str, fairness: str, relevance: str,
             tradeoff_weight: str, select_item: str) -> str:
@@ -461,7 +464,7 @@ class PathDirFile:
         Log directory. This method is to deal with the log in the postprocessing step.
         
         :param experiment_name: A string that represents the experiment name.
-        :param based_on: A string that represents the type of split.
+        :param split_methodology: A string that represents the type of split.
         :param dataset: A string that's representing the dataset name.
         :param recommender: A string that's representing the recommender algorithm name.
         :param trial: The trial number.
@@ -474,7 +477,7 @@ class PathDirFile:
         :param select_item: The select item algorithm name.
 
         :return: A string like 
-        data/{experiment_name}/recommendation_lists/{dataset}/{based_on}/
+        data/{experiment_name}/recommendation_lists/{dataset}/{split_methodology}/
         {recommender}/{tradeoff}/{distribution}/{relevance}/{select_item}/
         {fairness}/{tradeoff_weight}/trial-{trial}/fold-{fold}/
         """
@@ -493,15 +496,16 @@ class PathDirFile:
 
     @staticmethod
     def set_recommender_metric_fold_file(
-            experiment_name: str, based_on: str,
+            experiment_name: str, split_methodology: str,
             dataset: str, recommender: str, trial: int, fold: int,
             tradeoff: str, distribution: str, fairness: str, relevance: str,
-            tradeoff_weight: str, select_item: str, filename: str) -> str:
+            tradeoff_weight: str, select_item: str, filename: str, distribution_class: str
+    ) -> str:
         f"""
         Method to set the file path, which deal with the postprocessing step execution time.
         
         :param experiment_name: A string that represents the experiment name.
-        :param based_on: A string that represents the type of split.
+        :param split_methodology: A string that represents the type of split.
         :param dataset: A string that's representing the dataset name.
         :param recommender: A string that's representing the recommender algorithm name.
         :param trial: The trial number.
@@ -515,13 +519,13 @@ class PathDirFile:
         :param filename:
 
         :return: A string like 
-        data/{experiment_name}/metrics/{dataset}/{based_on}/
-        {recommender}/{tradeoff}/{distribution}/{relevance}/{select_item}/
+        data/{experiment_name}/metrics/{dataset}/{split_methodology}/
+        {recommender}/{tradeoff}/{distribution}/{distribution_class}/{relevance}/{select_item}/
         {fairness}/{tradeoff_weight}/trial-{trial}/fold-{fold}/
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, 'metrics', dataset, based_on,
-            recommender, tradeoff, distribution, relevance, select_item,
+            PathDirFile.DATA_DIR, experiment_name, 'metrics', dataset, split_methodology,
+            recommender, tradeoff, distribution, distribution_class, relevance, select_item,
             fairness, tradeoff_weight, 'trial-' + str(trial), 'fold-' + str(fold)
         ])
         if not os.path.exists(save_in_dir):
@@ -530,15 +534,16 @@ class PathDirFile:
 
     @staticmethod
     def get_recommender_metric_fold_file(
-            experiment_name: str, based_on: str,
+            experiment_name: str, split_methodology: str,
             dataset: str, recommender: str, trial: int, fold: int,
             tradeoff: str, distribution: str, fairness: str, relevance: str,
-            tradeoff_weight: str, select_item: str, filename: str) -> str:
+            tradeoff_weight: str, select_item: str, filename: str, distribution_class: str
+    ) -> str:
         f"""
         Method to get the file path, which deal with the postprocessing step execution time.
         
         :param experiment_name: A string that represents the experiment name.
-        :param based_on: A string that represents the type of split.
+        :param split_methodology: A string that represents the type of split.
         :param dataset: A string that's representing the dataset name.
         :param recommender: A string that's representing the recommender algorithm name.
         :param trial: The trial number.
@@ -552,28 +557,30 @@ class PathDirFile:
         :param filename:
 
         :return: A string like
-        data/{experiment_name}/metrics/{dataset}/{based_on}/
-        {recommender}/{tradeoff}/{distribution}/{relevance}/{select_item}/
+        data/{experiment_name}/metrics/{dataset}/{split_methodology}/
+        {recommender}/{tradeoff}/{distribution}/{distribution_class}/{relevance}/{select_item}/
         {fairness}/{tradeoff_weight}/trial-{trial}/fold-{fold}/
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, 'metrics', dataset, based_on,
-            recommender, tradeoff, distribution, relevance, select_item,
+            PathDirFile.DATA_DIR, experiment_name, 'metrics', dataset, split_methodology,
+            recommender, tradeoff, distribution, distribution_class, relevance, select_item,
             fairness, tradeoff_weight, 'trial-' + str(trial), 'fold-' + str(fold)
         ])
         return "/".join([save_in_dir, filename])
 
     @staticmethod
     def set_conformity_metric_fold_file_by_name(
-            experiment_name: str, based_on: str,
+            experiment_name: str, split_methodology: str,
             dataset: str, recommender: str, trial: int, fold: int,
             tradeoff: str, distribution: str, fairness: str, relevance: str,
-            tradeoff_weight: str, select_item: str, cluster: str, filename: str) -> str:
+            tradeoff_weight: str, select_item: str, cluster: str, filename: str,
+            distribution_class: str
+    ) -> str:
         f"""
         Method to set the file path, which deal with the postprocessing step execution time.
         
         :param experiment_name: A string that represents the experiment name.
-        :param based_on: A string that represents the type of split.
+        :param split_methodology: A string that represents the type of split.
         :param dataset: A string that's representing the dataset name.
         :param recommender: A string that's representing the recommender algorithm name.
         :param trial: The trial number.
@@ -588,13 +595,13 @@ class PathDirFile:
         :param filename: TODO
 
         :return: A string like 
-        data/{experiment_name}/metrics/{dataset}/{based_on}/
-        {recommender}/{tradeoff}/{distribution}/{relevance}/{select_item}/
+        data/{experiment_name}/metrics/{dataset}/{split_methodology}/
+        {recommender}/{tradeoff}/{distribution}/{distribution_class}/{relevance}/{select_item}/
         {fairness}/{tradeoff_weight}/trial-{trial}/fold-{fold}/{cluster}
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, 'metrics', dataset, based_on,
-            recommender, tradeoff, distribution, relevance, select_item,
+            PathDirFile.DATA_DIR, experiment_name, 'metrics', dataset, split_methodology,
+            recommender, tradeoff, distribution, distribution_class, relevance, select_item,
             fairness, tradeoff_weight, 'trial-' + str(trial), 'fold-' + str(fold), cluster
         ])
         if not os.path.exists(save_in_dir):
@@ -603,15 +610,17 @@ class PathDirFile:
 
     @staticmethod
     def get_conformity_metric_fold_file_by_name(
-            experiment_name: str, based_on: str,
+            experiment_name: str, split_methodology: str,
             dataset: str, recommender: str, trial: int, fold: int,
             tradeoff: str, distribution: str, fairness: str, relevance: str,
-            tradeoff_weight: str, select_item: str, cluster: str, filename: str) -> str:
+            tradeoff_weight: str, select_item: str, cluster: str, filename: str,
+            distribution_class: str
+    ) -> str:
         f"""
         Method to get the file path, which deal with the postprocessing step execution time.
         
         :param experiment_name: A string that represents the experiment name.
-        :param based_on: A string that represents the type of split.
+        :param split_methodology: A string that represents the type of split.
         :param dataset: A string that's representing the dataset name.
         :param recommender: A string that's representing the recommender algorithm name.
         :param trial: The trial number.
@@ -626,13 +635,13 @@ class PathDirFile:
         :param filename:
 
         :return: A string like 
-        data/{experiment_name}/metrics/{dataset}/{based_on}/
-        {recommender}/{tradeoff}/{distribution}/{relevance}/{select_item}/
+        data/{experiment_name}/metrics/{dataset}/{split_methodology}/
+        {recommender}/{tradeoff}/{distribution}/{distribution_class}/{relevance}/{select_item}/
         {fairness}/{tradeoff_weight}/trial-{trial}/fold-{fold}/{cluster}
         """
         save_in_dir = "/".join([
-            PathDirFile.DATA_DIR, experiment_name, 'metrics', dataset, based_on,
-            recommender, tradeoff, distribution, relevance, select_item,
+            PathDirFile.DATA_DIR, experiment_name, 'metrics', dataset, split_methodology,
+            recommender, tradeoff, distribution, distribution_class, relevance, select_item,
             fairness, tradeoff_weight, 'trial-' + str(trial), 'fold-' + str(fold), cluster
         ])
         return "/".join([save_in_dir, filename])
@@ -756,20 +765,20 @@ class PathDirFile:
 
     @staticmethod
     def preprocessing_graphics_file(
-            dataset: str, experiment_name: str, based_on: str, filename: str
+            dataset: str, experiment_name: str, split_methodology: str, filename: str
     ) -> str:
         f"""
         Method to get the file path, which deal with the graphics files.
 
         :param experiment_name: A string that`s representing the experiment name.
         :param dataset: A string that's representing the dataset name.
-        :param based_on: A string that`s representing the type of split.
+        :param split_methodology: A string that`s representing the type of split.
         :param filename: The distribution filename.
 
         :return: A string like results/{experiment_name}/analyze/{dataset}/{filename}
         """
         save_in_dir = "/".join([
-            PathDirFile.RESULTS_DIR, experiment_name, dataset, based_on, "dataset_graphics"
+            PathDirFile.RESULTS_DIR, experiment_name, dataset, split_methodology, "dataset_graphics"
         ])
         if not os.path.exists(save_in_dir):
             os.makedirs(save_in_dir)

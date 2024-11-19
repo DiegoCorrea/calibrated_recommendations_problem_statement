@@ -26,7 +26,7 @@ class SurpriseRecommenderAlgorithm:
             self,
             experiment_name: str,
             recommender_name: str, dataset_name: str, fold: int, trial: int,
-            metric: str, based_on: str, list_size: int
+            metric: str, split_methodology: str, list_size: int
     ):
         """
         Class constructor.
@@ -44,7 +44,7 @@ class SurpriseRecommenderAlgorithm:
         self.trial = trial
         self.recommender = None
         self.list_size = list_size
-        self.based_on = based_on
+        self.split_methodology = split_methodology
         self.experiment_name = experiment_name
 
         # Load the surprise recommender algorithm
@@ -52,7 +52,7 @@ class SurpriseRecommenderAlgorithm:
             self.recommender = SlopeOne()
         else:
             full_params = SaveAndLoad.load_hyperparameters_recommender(
-                experiment_name=self.experiment_name, based_on=self.based_on,
+                experiment_name=self.experiment_name, split_methodology=self.split_methodology,
                 dataset=self.dataset.system_name, algorithm=self.recommender_name
             )
             params = full_params["params"]
@@ -179,9 +179,9 @@ class SurpriseRecommenderAlgorithm:
         logger.info(">>> Fit the recommender algorithm")
         self.dataset.set_environment(
             experiment_name=self.experiment_name,
-            based_on=self.based_on
+            split_methodology=self.split_methodology
         )
-        if self.based_on in Label.BASED_ON_VALIDATION:
+        if self.split_methodology in Label.BASED_ON_VALIDATION:
             users_preferences = self.dataset.get_full_train_transactions(
                 fold=self.fold, trial=self.trial
             )
@@ -208,7 +208,7 @@ class SurpriseRecommenderAlgorithm:
         # Save all recommendation lists
         logger.info(">>> Saving...")
         SaveAndLoad.save_candidate_items(
-            experiment_name=self.experiment_name, based_on=self.based_on,
+            experiment_name=self.experiment_name, split_methodology=self.split_methodology,
             data=result_list,
             dataset=self.dataset.system_name, algorithm=self.recommender_name,
             fold=self.fold, trial=self.trial

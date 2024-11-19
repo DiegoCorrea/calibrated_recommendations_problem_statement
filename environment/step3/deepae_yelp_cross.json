@@ -1,0 +1,13 @@
+{
+  "experiment_name": "COMPARING_MODELS",
+  "opt": "RECOMMENDER",
+  "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
+  "n_jobs": 1,
+  "checkpoint": "NO",
+  "dataset": ["yelp"],
+  "recommender": ["DEEP_AE"],
+  "fold": [1, 2, 3],
+  "trial": [1],
+  "list_size": 100,
+  "metric": "map"
+}

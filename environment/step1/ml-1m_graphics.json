@@ -2,5 +2,5 @@
   "experiment_name": "COMPARING_MODELS",
   "opt": "CHART",
   "dataset": "ml-1m",
-  "based_on": "CVTT"
+  "split_methodology": "CVTT"
 }

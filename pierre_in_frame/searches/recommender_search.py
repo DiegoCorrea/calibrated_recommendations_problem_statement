@@ -1,102 +1,23 @@
-import multiprocessing
-
 import itertools
 import logging
+import multiprocessing
 import random
 from copy import deepcopy
-from time import sleep
 
 import pandas as pd
-import threadpoolctl
 from joblib import Parallel, delayed
 from numpy import mean, ceil
 from scikit_pierre.metrics.evaluation import MeanAveragePrecision, MeanReciprocalRank
 from surprise import SVD, KNNBasic
-from surprise.model_selection import RandomizedSearchCV
-from surprise.prediction_algorithms.co_clustering import CoClustering
-from surprise.prediction_algorithms.matrix_factorization import SVDpp, NMF
+from surprise.prediction_algorithms.matrix_factorization import NMF
 from tqdm import tqdm
 
-from datasets.registred_datasets import RegisteredDataset
 from processing.conversions.pandas_surprise import PandasSurprise
 from searches.base_search import BaseSearch
 from searches.parameters import SurpriseParams
-from settings.constants import Constants
 from settings.labels import Label
-from settings.save_and_load import SaveAndLoad
 
 logger = logging.getLogger(__name__)
-
-
-class RecommenderSearch:
-    """
-    Class used to lead with the Random Search
-    """
-
-    def __init__(
-            self, experiment_name: str, based_on: str, recommender: str, dataset: str, trial: int = None, fold: int = None,
-            n_inter: int = Constants.N_INTER, n_jobs: int = Constants.N_CORES,
-            n_cv: int = Constants.K_FOLDS_VALUE
-    ):
-        self.measures = ['rmse', 'mae', 'fcp', 'mse']
-        self.experiment_name = experiment_name
-        self.based_on = based_on
-        self.trial = trial
-        self.fold = fold
-        self.n_inter = n_inter
-        self.n_jobs = n_jobs
-        self.n_cv = n_cv
-        self.dataset = RegisteredDataset.load_dataset(dataset)
-        self.recommender_name = recommender
-        self.recommender = None
-        self.params = None
-        if recommender == Label.SVD:
-            self.recommender = SVD
-            self.params = SurpriseParams.SVD_SEARCH_PARAMS
-        elif recommender == Label.NMF:
-            self.recommender = NMF
-            self.params = SurpriseParams.NMF_SEARCH_PARAMS
-        elif recommender == Label.CO_CLUSTERING:
-            self.recommender = CoClustering
-            self.params = SurpriseParams.CLUSTERING_SEARCH_PARAMS
-        elif recommender == Label.ITEM_KNN_BASIC:
-            self.recommender = KNNBasic
-            self.params = SurpriseParams.ITEM_KNN_SEARCH_PARAMS
-        elif recommender == Label.USER_KNN_BASIC:
-            self.recommender = KNNBasic
-            self.params = SurpriseParams.USER_KNN_SEARCH_PARAMS
-        else:
-            self.recommender = SVDpp
-            self.params = SurpriseParams.SVDpp_SEARCH_PARAMS
-
-    def __search(self):
-        """
-        Randomized Search Cross Validation to get the best params in the recommender algorithm
-        :return: A Random Search instance
-        """
-        gs = RandomizedSearchCV(
-            algo_class=self.recommender, param_distributions=self.params, measures=self.measures,
-            n_iter=self.n_inter, cv=self.n_cv,
-            n_jobs=self.n_jobs, joblib_verbose=100, random_state=42
-        )
-        gs.fit(
-            PandasSurprise.pandas_transform_all_dataset_to_surprise(
-                self.dataset.get_full_train_transactions(trial=self.trial, fold=self.fold)
-            )
-        )
-        return gs
-
-    def fit(self) -> None:
-        """
-        Search and save the best param values
-        """
-        gs = self.__search()
-        # Saving
-        SaveAndLoad.save_hyperparameters_recommender(
-            best_params=gs.best_params,
-            dataset=self.dataset.system_name, algorithm=self.recommender_name,
-            experiment_name=self.experiment_name, based_on=self.based_on
-        )
 
 
 class SurpriseRandomSearch(BaseSearch):
@@ -106,11 +27,13 @@ class SurpriseRandomSearch(BaseSearch):
             experiment_name: str, algorithm: str,
             dataset_name: str, trial: int = 1, fold: int = 1,
             n_jobs: int = 1, list_size: int = 100, n_inter: int = 50,
-            based_on: str = Label.CROSS_TRAIN_VALIDATION_TEST, multiprocessing_lib: str = Label.JOBLIB
+            split_methodology: str = Label.CROSS_TRAIN_VALIDATION_TEST,
+            multiprocessing_lib: str = Label.JOBLIB
     ):
         super().__init__(
             algorithm=algorithm, dataset_name=dataset_name, trial=trial, fold=fold,
-            n_jobs=n_jobs, list_size=list_size, n_inter=n_inter, based_on=based_on,
+            n_jobs=n_jobs, list_size=list_size, n_inter=n_inter,
+            split_methodology=split_methodology,
             experiment_name=experiment_name, multiprocessing_lib=multiprocessing_lib
         )
 
@@ -125,7 +48,8 @@ class SurpriseRandomSearch(BaseSearch):
         return unk_items_list
 
     @staticmethod
-    def __predict_unit(recommender, user_id, user_unknown_items_ids: list, list_size: int) -> pd.DataFrame:
+    def __predict_unit(recommender, user_id, user_unknown_items_ids: list,
+                       list_size: int) -> pd.DataFrame:
         """
         Method to predict the rating to a user.
 
@@ -139,7 +63,8 @@ class SurpriseRandomSearch(BaseSearch):
         ]
         predictions = pd.DataFrame(predictions)
         predictions = predictions.rename(
-            index=str, columns={"uid": Label.USER_ID, "iid": Label.ITEM_ID, "est": Label.TRANSACTION_VALUE}
+            index=str,
+            columns={"uid": Label.USER_ID, "iid": Label.ITEM_ID, "est": Label.TRANSACTION_VALUE}
         )
         # print(predictions)
         return predictions.drop(
@@ -237,7 +162,7 @@ class SurpriseRandomSearch(BaseSearch):
         df_grouped = list(users_preferences.groupby([Label.USER_ID]))
 
         progress = tqdm(total=len(df_grouped))
-        loops = int(ceil(len(df_grouped)/100))
+        loops = int(ceil(len(df_grouped) / 100))
 
         user_preds = [pd.concat(
             SurpriseRandomSearch.__make_batch_recommendation__(
@@ -256,7 +181,7 @@ class SurpriseRandomSearch(BaseSearch):
     def fit_nmf(
             n_factors, n_epochs, reg_pu, reg_qi, reg_bu, reg_bi, lr_bu, lr_bi, random_state,
             train_list, valid_list, item_df, list_size,
-            based_on, experiment_name, algorithm, dataset_name
+            split_methodology, experiment_name, algorithm, dataset_name
     ):
         map_value = []
         mrr_value = []
@@ -301,14 +226,14 @@ class SurpriseRandomSearch(BaseSearch):
         }
         SurpriseRandomSearch.defining_metric_and_save_during_run(
             dataset_name=dataset_name, algorithm=algorithm, params=params,
-            based_on=based_on, experiment_name=experiment_name
+            split_methodology=split_methodology, experiment_name=experiment_name
         )
 
     @staticmethod
     def fit_svd(
             n_factors, n_epochs, lr_all, reg_all, random_state,
             train_list, valid_list, item_df, list_size,
-            based_on, experiment_name, algorithm, dataset_name
+            split_methodology, experiment_name, algorithm, dataset_name
     ):
         map_value = []
         mrr_value = []
@@ -348,14 +273,14 @@ class SurpriseRandomSearch(BaseSearch):
         }
         SurpriseRandomSearch.defining_metric_and_save_during_run(
             dataset_name=dataset_name, algorithm=algorithm, params=params,
-            based_on=based_on, experiment_name=experiment_name
+            split_methodology=split_methodology, experiment_name=experiment_name
         )
 
     @staticmethod
     def fit_knn(
             k, sim_options,
             train_list, valid_list, item_df, list_size,
-            based_on, experiment_name, algorithm, dataset_name
+            split_methodology, experiment_name, algorithm, dataset_name
     ):
         map_value = []
         mrr_value = []
@@ -391,7 +316,7 @@ class SurpriseRandomSearch(BaseSearch):
         }
         SurpriseRandomSearch.defining_metric_and_save_during_run(
             dataset_name=dataset_name, algorithm=algorithm, params=params,
-            based_on=based_on, experiment_name=experiment_name
+            split_methodology=split_methodology, experiment_name=experiment_name
         )
 
     def get_user_knn_params(self):
@@ -451,21 +376,24 @@ class SurpriseRandomSearch(BaseSearch):
                         valid_list=deepcopy(self.valid_list),
                         item_df=deepcopy(self.item_df),
                         list_size=deepcopy(self.list_size),
-                        based_on=deepcopy(self.based_on),
+                        split_methodology=deepcopy(self.split_methodology),
                         experiment_name=deepcopy(self.experiment_name),
                         algorithm=deepcopy(self.algorithm),
                         dataset_name=deepcopy(self.dataset.system_name)
-                    ) for n_factors, n_epochs, reg_pu, reg_qi, reg_bu, reg_bi, lr_bu, lr_bi, random_state in
+                    ) for
+                    n_factors, n_epochs, reg_pu, reg_qi, reg_bu, reg_bi, lr_bu, lr_bi, random_state
+                    in
                     params_to_use
                 )
             else:
                 process_args = []
                 for n_factors, n_epochs, reg_pu, reg_qi, reg_bu, reg_bi, lr_bu, lr_bi, random_state in params_to_use:
                     process_args.append((
-                        n_factors, n_epochs, reg_pu, reg_qi, reg_bu, reg_bi, lr_bu, lr_bi, random_state,
+                        n_factors, n_epochs, reg_pu, reg_qi, reg_bu, reg_bi, lr_bu, lr_bi,
+                        random_state,
                         deepcopy(self.train_list), deepcopy(self.valid_list),
                         deepcopy(self.item_df), deepcopy(self.list_size),
-                        deepcopy(self.based_on), deepcopy(self.experiment_name),
+                        deepcopy(self.split_methodology), deepcopy(self.experiment_name),
                         deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
                     ))
                 pool = multiprocessing.Pool(processes=self.n_jobs)
@@ -488,7 +416,7 @@ class SurpriseRandomSearch(BaseSearch):
                         valid_list=deepcopy(self.valid_list),
                         item_df=deepcopy(self.item_df),
                         list_size=deepcopy(self.list_size),
-                        based_on=deepcopy(self.based_on),
+                        split_methodology=deepcopy(self.split_methodology),
                         experiment_name=deepcopy(self.experiment_name),
                         algorithm=deepcopy(self.algorithm),
                         dataset_name=deepcopy(self.dataset.system_name)
@@ -502,7 +430,7 @@ class SurpriseRandomSearch(BaseSearch):
                         n_factors, n_epochs, lr_all, reg_all, random_state,
                         deepcopy(self.train_list), deepcopy(self.valid_list),
                         deepcopy(self.item_df), deepcopy(self.list_size),
-                        deepcopy(self.based_on), deepcopy(self.experiment_name),
+                        deepcopy(self.split_methodology), deepcopy(self.experiment_name),
                         deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
                     ))
                 pool = multiprocessing.Pool(processes=self.n_jobs)
@@ -523,7 +451,7 @@ class SurpriseRandomSearch(BaseSearch):
                         valid_list=deepcopy(self.valid_list),
                         item_df=deepcopy(self.item_df),
                         list_size=deepcopy(self.list_size),
-                        based_on=deepcopy(self.based_on),
+                        split_methodology=deepcopy(self.split_methodology),
                         experiment_name=deepcopy(self.experiment_name),
                         algorithm=deepcopy(self.algorithm),
                         dataset_name=deepcopy(self.dataset.system_name)
@@ -537,7 +465,7 @@ class SurpriseRandomSearch(BaseSearch):
                         k, sim_options,
                         deepcopy(self.train_list), deepcopy(self.valid_list),
                         deepcopy(self.item_df), deepcopy(self.list_size),
-                        deepcopy(self.based_on), deepcopy(self.experiment_name),
+                        deepcopy(self.split_methodology), deepcopy(self.experiment_name),
                         deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
                     ))
                 pool = multiprocessing.Pool(processes=self.n_jobs)

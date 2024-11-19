@@ -31,7 +31,7 @@ class ManualConformityAlgorithmSearch:
 
     def __init__(
         self,
-        experiment_name: str, based_on: str,
+        experiment_name: str, split_methodology: str,
         dataset_name: str, distribution_list: list,
         n_jobs: int, fold: int, trial: int, n_inter: int
     ):
@@ -42,7 +42,7 @@ class ManualConformityAlgorithmSearch:
         self.n_inter = n_inter
 
         self.experiment_name = experiment_name
-        self.based_on = based_on
+        self.split_methodology = split_methodology
 
         self.distribution_list = distribution_list
 
@@ -63,7 +63,7 @@ class ManualConformityAlgorithmSearch:
                 users_distribution_list.append(SaveAndLoad.load_user_preference_distribution(
                     dataset=self.dataset_name, trial=trial, fold=fold,
                     distribution=distribution, experiment_name=self.experiment_name,
-                    based_on=self.based_on
+                    split_methodology=self.split_methodology
                 ))
         return users_distribution_list
 
@@ -230,5 +230,5 @@ class ManualConformityAlgorithmSearch:
             SaveAndLoad.save_hyperparameters_conformity(
                 best_params=best_param, dataset=self.dataset_name,
                 cluster=conformity_str, distribution=distribution,
-                experiment_name=self.experiment_name, based_on=self.based_on
+                experiment_name=self.experiment_name, split_methodology=self.split_methodology
             )

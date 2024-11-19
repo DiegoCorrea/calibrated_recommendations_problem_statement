@@ -59,7 +59,7 @@ class GenreChats:
     def compare_genre_distribution_bar(
             distribution1, distribution2, dataset: str, 
             label1: str = 'Users', label2: str = 'Items', ylabel: str = 'Genres',
-            experiment_name: str = "default", based_on: str = None
+            experiment_name: str = "default", split_methodology: str = None
     ):
         distribution1 = distribution1.reindex(sorted(distribution1.columns), axis=1)
         distribution2 = distribution2.reindex(sorted(distribution2.columns), axis=1)
@@ -93,7 +93,7 @@ class GenreChats:
         # plt.xticks(rotation=90)
 
         saving_file = PathDirFile.preprocessing_graphics_file(
-            dataset=dataset, experiment_name=experiment_name, based_on=based_on,
+            dataset=dataset, experiment_name=experiment_name, split_methodology=split_methodology,
             filename='compare_genre_distribution_bar.eps'
         )
         # Salvar figura no disco
@@ -105,7 +105,7 @@ class GenreChats:
         )
 
         saving_file = PathDirFile.preprocessing_graphics_file(
-            dataset=dataset, experiment_name=experiment_name, based_on=based_on,
+            dataset=dataset, experiment_name=experiment_name, split_methodology=split_methodology,
             filename='compare_genre_distribution_bar.png'
         )
         # Salvar figura no disco

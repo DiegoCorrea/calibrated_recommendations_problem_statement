@@ -80,7 +80,7 @@ class RegisteredDataset:
             experiment_name: str,
             dataset: str, n_trials: int, n_folds: int,
             cut_value: int, item_cut_value: int, profile_len_cut_value: int,
-            based_on: str, test_len_cut_value: int
+            split_methodology: str, test_len_cut_value: int
     ):
         """
         Preprocessing the requested dataset, if the dataset is registered.
@@ -125,6 +125,6 @@ class RegisteredDataset:
             cut_value=cut_value, item_cut_value=item_cut_value,
             profile_len_cut_value=profile_len_cut_value,
             test_len_cut_value=test_len_cut_value,
-            n_trials=n_trials, n_folds=n_folds, based_on=based_on
+            n_trials=n_trials, n_folds=n_folds, split_methodology=split_methodology
         )
         instance.choosing_preprocessing()

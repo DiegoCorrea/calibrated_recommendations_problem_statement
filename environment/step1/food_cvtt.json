@@ -2,7 +2,7 @@
   "experiment_name": "COMPARING_MODELS",
   "dataset": "food",
   "opt": "SPLIT",
-  "based_on": "CVTT",
+  "split_methodology": "CVTT",
   "n_folds": 3,
   "n_trials": 1,
   "cut_value": 3,

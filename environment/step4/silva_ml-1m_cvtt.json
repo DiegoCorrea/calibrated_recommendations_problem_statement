@@ -1,15 +1,15 @@
 {
   "experiment_name": "COMPARING_MODELS",
-  "based_on": "CROSS_TRAIN_VALIDATION_TEST",
+  "split_methodology": "CVTT",
   "multiprocessing": "joblib",
   "n_jobs": 61,
   "checkpoint": "YES",
-  "dataset": ["yelp"],
+  "dataset": ["ml-1m"],
   "recommender": ["BPR", "ALS", "ITEMKNN", "SVD", "POPULARITY_REC"],
   "fold": [1, 2, 3],
   "trial": [1],
-  "tradeoff": ["LIN"],
-  "fairness": ["KL"],
+  "tradeoff": ["LOG"],
+  "fairness": ["CHI_SQUARE"],
   "relevance": ["SUM"],
   "weight": [
     "C@0.0", "C@0.1", "C@0.2",
@@ -19,6 +19,10 @@
   ],
   "distribution": [
     "CWS"
+  ],
+  "distribution_class": [
+    "POP",
+    "GENRE"
   ],
   "selector": ["SURROGATE"],
   "list_size": [10],

@@ -24,7 +24,7 @@ class ApplyingMetric:
 
     def __init__(
             self,
-            experiment_name: str, based_on: str,
+            experiment_name: str, split_methodology: str,
             recommender: str, dataset: str, trial: int, fold: int,
             distribution: str, fairness: str, relevance: str,
             weight: str, tradeoff: str, selector: str,
@@ -36,7 +36,7 @@ class ApplyingMetric:
         self.recommender = recommender
         self.dataset = dataset
         self.experiment_name = experiment_name
-        self.based_on = based_on
+        self.split_methodology = split_methodology
         self.trial = trial
         self.fold = fold
         self.distribution = distribution
@@ -77,7 +77,7 @@ class ApplyingMetric:
             recommender=self.recommender, dataset=self.dataset, trial=self.trial, fold=self.fold,
             distribution=self.distribution, fairness=self.fairness, relevance=self.relevance,
             tradeoff_weight=self.weight, tradeoff=self.tradeoff, select_item=self.selector,
-            experiment_name=self.experiment_name, based_on=self.based_on
+            experiment_name=self.experiment_name, split_methodology=self.split_methodology
         )
 
     def load_rec_baseline(self):
@@ -89,7 +89,7 @@ class ApplyingMetric:
                 recommender=self.recommender, dataset=self.dataset, trial=self.trial, fold=self.fold,
                 distribution=self.distribution, fairness=self.fairness, relevance=self.relevance,
                 tradeoff_weight="C@0.0", tradeoff=self.tradeoff, select_item=self.selector,
-            experiment_name=self.experiment_name, based_on=self.based_on
+            experiment_name=self.experiment_name, split_methodology=self.split_methodology
             )
 
     def load_items_set(self):
@@ -104,7 +104,7 @@ class ApplyingMetric:
                 self.items_one_hot_encoded = SaveAndLoad.load_item_class_one_hot_encode(
                     dataset=self.dataset,
                     experiment_name=self.experiment_name,
-                    based_on=self.based_on
+                    split_methodology=self.split_methodology
                 )
             except FileNotFoundError or IOError:
                 self.items_one_hot_encoded = None
@@ -115,7 +115,7 @@ class ApplyingMetric:
         """
         self.users_cand_items_df = SaveAndLoad.load_candidate_items(
             algorithm=self.recommender, dataset=self.dataset, trial=self.trial, fold=self.fold,
-            experiment_name=self.experiment_name, based_on=self.based_on
+            experiment_name=self.experiment_name, split_methodology=self.split_methodology
         )
 
     def load_test_set(self):
@@ -130,7 +130,7 @@ class ApplyingMetric:
         self.dataset_instance = RegisteredDataset.load_dataset(self.dataset)
         self.dataset_instance.set_environment(
             experiment_name=self.experiment_name,
-            based_on=self.based_on
+            split_methodology=self.split_methodology
         )
 
 
@@ -140,7 +140,7 @@ class ApplyingMetric:
                 target_dist = SaveAndLoad.load_user_preference_distribution(
                     dataset=self.dataset, fold=self.fold, trial=self.trial,
                     distribution=self.distribution,
-                    experiment_name=self.experiment_name, based_on=self.based_on
+                    experiment_name=self.experiment_name, split_methodology=self.split_methodology
                 )
                 self.target_dist = target_dist.to_dict('index')
         except IOError or FileNotFoundError as e:
@@ -296,7 +296,7 @@ class ApplyingMetric:
             recommender=self.recommender, dataset=self.dataset, trial=self.trial, fold=self.fold,
             distribution=self.distribution, fairness=self.fairness, relevance=self.relevance,
             weight=self.weight, tradeoff=self.tradeoff, selector=self.selector,
-            experiment_name=self.experiment_name, based_on=self.based_on
+            experiment_name=self.experiment_name, split_methodology=self.split_methodology
         )
 
     def verifying_checkpoint(self):
@@ -308,7 +308,7 @@ class ApplyingMetric:
                 distribution=self.distribution, fairness=self.fairness,
                 relevance=self.relevance,
                 weight=self.weight, tradeoff=self.tradeoff, selector=self.selector,
-                experiment_name=self.experiment_name, based_on=self.based_on
+                experiment_name=self.experiment_name, split_methodology=self.split_methodology
             )
         ):
             return True

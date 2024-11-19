@@ -1,0 +1,11 @@
+{
+  "experiment_name": "COMPARING_MODELS",
+  "multiprocessing": "starmap",
+  "n_jobs": 4,
+  "opt": "CLASS_DISTRIBUTION",
+  "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
+  "dataset": "yelp",
+  "distribution_class": [
+    "POP"
+  ]
+}

@@ -16,17 +16,18 @@ class BaseSearch:
             algorithm: str, experiment_name: str,
             dataset_name: str, trial: int = 1, fold: int = 3,
             n_jobs: int = 1, list_size: int = 10, n_inter: int = 50,
-            based_on: str = Label.CROSS_TRAIN_VALIDATION_TEST, multiprocessing_lib: str = Label.STARMAP
+            split_methodology: str = Label.CROSS_TRAIN_VALIDATION_TEST,
+            multiprocessing_lib: str = Label.STARMAP
     ):
         """
         Parameters
         """
-        self.based_on = based_on
+        self.split_methodology = split_methodology
         self.experiment_name = experiment_name
         self.dataset = RegisteredDataset.load_dataset(dataset_name)
         self.dataset.set_environment(
             experiment_name=self.experiment_name,
-            based_on=self.based_on
+            split_methodology=self.split_methodology
         )
         self.algorithm = algorithm
         self.trial = trial
@@ -49,7 +50,7 @@ class BaseSearch:
             for f in range(1, self.fold + 1):
                 train_df = self.dataset.get_train_transactions(fold=f, trial=t)
                 self.train_list.append(train_df)
-                if self.based_on in Label.BASED_ON_VALIDATION:
+                if self.split_methodology in Label.BASED_ON_VALIDATION:
                     valid_df = self.dataset.get_validation_transactions(fold=f, trial=t)
                     self.valid_list.append(valid_df)
                 else:
@@ -70,16 +71,19 @@ class BaseSearch:
         # Saving
         SaveAndLoad.save_hyperparameters_recommender(
             best_params=best_params, dataset=self.dataset.system_name, algorithm=self.algorithm,
-            experiment_name=self.experiment_name, based_on=self.based_on
+            experiment_name=self.experiment_name, split_methodology=self.split_methodology
         )
         # Saving
         SaveAndLoad.save_hyperparameters_recommender(
-            best_params=self.output, dataset=self.dataset.system_name, algorithm=self.algorithm + "_all",
-            experiment_name=self.experiment_name, based_on=self.based_on
+            best_params=self.output, dataset=self.dataset.system_name,
+            algorithm=self.algorithm + "_all",
+            experiment_name=self.experiment_name, split_methodology=self.split_methodology
         )
 
     @staticmethod
-    def defining_metric_and_save_during_run(dataset_name, algorithm, params, experiment_name, based_on):
+    def defining_metric_and_save_during_run(
+            dataset_name, algorithm, params, experiment_name, split_methodology
+    ):
         """
         Saves the pierre grid search algorithm to a file.
         """
@@ -90,18 +94,18 @@ class BaseSearch:
         try:
             full_params = SaveAndLoad.load_hyperparameters_recommender(
                 dataset=dataset_name, algorithm=algorithm,
-                based_on=based_on, experiment_name=experiment_name
+                split_methodology=split_methodology, experiment_name=experiment_name
             )
         except FileNotFoundError:
             SaveAndLoad.save_hyperparameters_recommender(
                 best_params=params, dataset=dataset_name, algorithm=algorithm,
-                based_on=based_on, experiment_name=experiment_name
+                split_methodology=split_methodology, experiment_name=experiment_name
             )
         if float(full_params["map"]) < float(params["map"]):
             # Saving
             SaveAndLoad.save_hyperparameters_recommender(
                 best_params=params, dataset=dataset_name, algorithm=algorithm,
-                based_on=based_on, experiment_name=experiment_name
+                split_methodology=split_methodology, experiment_name=experiment_name
             )
 
     def preparing_recommenders(self):
@@ -124,3 +128,5 @@ class BaseSearch:
         self.preparing_data()
 
         self.preparing_recommenders()
+
+        self.defining_metric_and_save()

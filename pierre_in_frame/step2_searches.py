@@ -54,7 +54,8 @@ class PierreStep2(Step):
         if self.experimental_settings['opt'] == Label.CONFORMITY:
             logger.info(" ".join(['>>', 'Cluster:', str(self.experimental_settings['cluster'])]))
         elif self.experimental_settings['opt'] == Label.RECOMMENDER:
-            logger.info(" ".join(['>>', 'Recommender:', str(self.experimental_settings['recommender'])]))
+            logger.info(
+                " ".join(['>>', 'Recommender:', str(self.experimental_settings['recommender'])]))
 
         logger.info(" ".join(['>>', 'Dataset:', str(self.experimental_settings['dataset'])]))
         logger.info(" ".join(['>>', 'Fold to use:', str(self.experimental_settings['fold'])]))
@@ -76,7 +77,7 @@ class PierreStep2(Step):
             search_instance = ManualConformityAlgorithmSearch(
                 dataset_name=dataset,
                 experiment_name=self.experimental_settings["experiment_name"],
-                based_on=self.experimental_settings["based_on"],
+                split_methodology=self.experimental_settings["split_methodology"],
                 distribution_list=self.experimental_settings["distribution"],
                 n_jobs=self.experimental_settings["n_jobs"],
                 fold=self.experimental_settings["fold"],
@@ -89,7 +90,6 @@ class PierreStep2(Step):
                 search_instance.run(
                     conformity_str=algorithm
                 )
-
 
     # ############################################################################################ #
     #  ############################ Recommender Algorithm Optimization ########################### #
@@ -115,7 +115,7 @@ class PierreStep2(Step):
                 n_inter=self.experimental_settings['n_inter'],
                 n_jobs=self.experimental_settings['n_jobs'],
                 n_threads=self.experimental_settings['n_threads'],
-                based_on=self.experimental_settings['based_on'],
+                split_methodology=self.experimental_settings["split_methodology"],
                 multiprocessing_lib=self.experimental_settings['multiprocessing']
             )
 
@@ -123,7 +123,7 @@ class PierreStep2(Step):
     def starting_recommender_search(
             experiment_name: str,
             recommender: str, dataset: str, trial: int, fold: int,
-            n_inter: int, n_jobs: int, n_threads: int, based_on: str,
+            n_inter: int, n_jobs: int, n_threads: int, split_methodology: str,
             multiprocessing_lib: str
     ) -> None:
         """
@@ -135,21 +135,23 @@ class PierreStep2(Step):
             search_instance = SurpriseRandomSearch(
                 experiment_name=experiment_name,
                 algorithm=recommender, dataset_name=dataset, trial=trial, fold=fold,
-                n_jobs=n_jobs, n_inter=n_inter, based_on=based_on,
+                n_jobs=n_jobs, n_inter=n_inter, split_methodology=split_methodology,
                 multiprocessing_lib=multiprocessing_lib
             )
         elif recommender in Label.IMPLICIT_RECOMMENDERS:
             search_instance = ImplicitGridSearch(
                 experiment_name=experiment_name,
                 algorithm=recommender, dataset_name=dataset, trial=trial, fold=fold,
-                n_jobs=n_jobs, n_threads=n_threads, n_inter=n_inter, based_on=based_on,
+                n_jobs=n_jobs, n_threads=n_threads, n_inter=n_inter,
+                split_methodology=split_methodology,
                 multiprocessing_lib=multiprocessing_lib
             )
         elif recommender in Label.PIERRE_RECOMMENDERS:
             search_instance = PierreGridSearch(
                 experiment_name=experiment_name,
                 algorithm=recommender, dataset_name=dataset, trial=trial, fold=fold,
-                n_jobs=n_jobs, n_threads=n_threads, n_inter=n_inter, based_on=based_on,
+                n_jobs=n_jobs, n_threads=n_threads, n_inter=n_inter,
+                split_methodology=split_methodology,
                 multiprocessing_lib=multiprocessing_lib
             )
         else:

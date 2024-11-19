@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 def starting_recommender(
         experiment_name: str,
         dataset: str, recommender: str, trial: int, fold: int,
-        checkpoint: str, metric: str, list_size: int, based_on: str
+        checkpoint: str, metric: str, list_size: int, split_methodology: str
 ) -> None:
     """
     Function to starting the recommender algorithm.
@@ -41,7 +41,7 @@ def starting_recommender(
     ])
 
     if checkpoint == "YES" and CheckpointVerification.unit_step3_verification(
-            experiment_name=experiment_name, based_on= based_on,
+            experiment_name=experiment_name, split_methodology= split_methodology,
             dataset=dataset, trial=trial, fold=fold, recommender=recommender
     ):
         logger.info(">> Already Done... " + system_name)
@@ -53,21 +53,21 @@ def starting_recommender(
                     experiment_name=experiment_name,
                     dataset_name=dataset, trial=trial, fold=fold, recommender_name=recommender,
                     metric=metric,
-                    list_size=list_size, based_on=based_on
+                    list_size=list_size, split_methodology=split_methodology
                 )
                 recommender_algorithm.run()
             elif recommender in Label.IMPLICIT_RECOMMENDERS:
                 recommender_algorithm = ImplicitRecommenderAlgorithm(
                     experiment_name=experiment_name,
                     dataset_name=dataset, trial=trial, fold=fold, recommender_name=recommender,
-                    list_size=list_size, based_on=based_on
+                    list_size=list_size, split_methodology=split_methodology
                 )
                 recommender_algorithm.run()
             elif recommender in Label.PIERRE_RECOMMENDERS:
                 recommender_algorithm = PierreRecommenderAlgorithm(
                     experiment_name=experiment_name,
                     dataset_name=dataset, trial=trial, fold=fold, recommender_name=recommender,
-                    list_size=list_size, based_on=based_on
+                    list_size=list_size, split_methodology=split_methodology
                 )
                 recommender_algorithm.run()
             else:
@@ -139,7 +139,7 @@ class PierreStep3(Step):
             self.experimental_settings['recommender'], self.experimental_settings['dataset'],
             self.experimental_settings['fold'], self.experimental_settings['trial'],
             [self.experimental_settings['checkpoint']], [self.experimental_settings['metric']],
-            [self.experimental_settings['list_size']], [self.experimental_settings['based_on']]
+            [self.experimental_settings['list_size']], [self.experimental_settings["split_methodology"]]
         ]
 
         system_combination = list(itertools.product(*combination))
@@ -150,8 +150,8 @@ class PierreStep3(Step):
             delayed(starting_recommender)(
                 experiment_name=experiment_name,
                 recommender=recommender, dataset=dataset, trial=trial, fold=fold, checkpoint=checkpoint,
-                metric=metric, list_size=list_size, based_on=based_on
-            ) for experiment_name, recommender, dataset, fold, trial, checkpoint, metric, list_size, based_on in system_combination
+                metric=metric, list_size=list_size, split_methodology=split_methodology
+            ) for experiment_name, recommender, dataset, fold, trial, checkpoint, metric, list_size, split_methodology in system_combination
         )
 
         # Finishing the Step

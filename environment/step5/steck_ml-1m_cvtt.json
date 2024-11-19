@@ -1,11 +1,16 @@
 {
   "experiment_name": "COMPARING_MODELS",
-  "based_on": "CVTT",
+  "split_methodology": "CVTT",
   "multiprocessing": "joblib",
   "n_jobs": 61,
-  "checkpoint": "YES",
-  "dataset": ["yelp"],
+  "checkpoint": "NO",
+  "opt": "EVALUATION_METRICS",
+  "metric": [
+    "MACE",
+    "MAP"
+  ],
   "recommender": ["BPR", "ALS", "ITEMKNN", "SVD", "POPULARITY_REC"],
+  "dataset": ["ml-1m"],
   "fold": [1, 2, 3],
   "trial": [1],
   "tradeoff": ["LIN"],
@@ -20,8 +25,5 @@
   "distribution": [
     "CWS"
   ],
-  "selector": ["SURROGATE"],
-  "list_size": [10],
-  "alpha": [0.01],
-  "d": [3]
+  "selector": ["SURROGATE"]
 }

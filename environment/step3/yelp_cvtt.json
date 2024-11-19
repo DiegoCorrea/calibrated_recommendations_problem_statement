@@ -1,7 +1,7 @@
 {
   "experiment_name": "COMPARING_MODELS",
   "opt": "RECOMMENDER",
-  "based_on": "CVTT",
+  "split_methodology": "CVTT",
   "n_jobs": 21,
   "checkpoint": "YES",
   "dataset": ["yelp"],
