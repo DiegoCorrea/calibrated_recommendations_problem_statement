@@ -118,12 +118,12 @@ class PierreRecommenderAlgorithm:
             dataset=self.dataset.system_name, fold=self.fold, trial=self.trial
         )
 
-        map_original = MeanAveragePrecision(
+        map_instance = MeanAveragePrecision(
             users_rec_list_df=rec_lists_df,
             users_test_set_df=test_set_df
         )
 
-        map_100_value = map_original.compute()
+        map_100_value = map_instance.compute()
         print(f"MAP Value is top-100 {map_100_value}.")
 
         candidate_items_top_10 = pd.concat(
@@ -133,9 +133,9 @@ class PierreRecommenderAlgorithm:
             ]
         )
 
-        map_10_value = MeanAveragePrecision(
+        map_instance = MeanAveragePrecision(
             users_rec_list_df=candidate_items_top_10,
             users_test_set_df=test_set_df
         )
-
+        map_10_value = map_instance.compute()
         print(f"MAP Value is top-10 {map_10_value}.")
