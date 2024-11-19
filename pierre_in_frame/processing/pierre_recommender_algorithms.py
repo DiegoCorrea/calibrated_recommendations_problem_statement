@@ -4,6 +4,7 @@ from recommender_pierre.autoencoders.CDAEModel import CDAEModel
 from recommender_pierre.autoencoders.DeppAutoEncModel import DeppAutoEncModel
 from recommender_pierre.baselines.Popularity import PopularityRecommender
 from recommender_pierre.baselines.Random import RandomRecommender
+from scikit_pierre.metrics.evaluation import MeanAveragePrecision
 
 from datasets.registred_datasets import RegisteredDataset
 from settings.labels import Label
@@ -93,15 +94,31 @@ class PierreRecommenderAlgorithm:
                 fold=self.fold, trial=self.trial
             )
 
-        rec_lists_df = self.recommender.train_and_produce_rec_list(
-            user_transactions_df=users_preferences
-        )
-
-        # Save all recommendation lists
-        logger.info(">>> Saving...")
-        SaveAndLoad.save_candidate_items(
+        # rec_lists_df = self.recommender.train_and_produce_rec_list(
+        #     user_transactions_df=users_preferences
+        # )
+        #
+        # # Save all recommendation lists
+        # logger.info(">>> Saving...")
+        # SaveAndLoad.save_candidate_items(
+        #     experiment_name=self.experiment_name, split_methodology=self.split_methodology,
+        #     data=rec_lists_df,
+        #     dataset=self.dataset.system_name, algorithm=self.recommender_name,
+        #     fold=self.fold, trial=self.trial
+        # )
+        rec_lists_df = SaveAndLoad.load_candidate_items(
             experiment_name=self.experiment_name, split_methodology=self.split_methodology,
-            data=rec_lists_df,
             dataset=self.dataset.system_name, algorithm=self.recommender_name,
             fold=self.fold, trial=self.trial
         )
+
+        map_original = MeanAveragePrecision(
+            users_rec_list_df=rec_lists_df,
+            users_test_set_df=SaveAndLoad.load_test_transactions(
+                experiment_name=self.experiment_name, split_methodology=self.split_methodology,
+                dataset=self.dataset.system_name, fold=self.fold, trial=self.trial
+            )
+        )
+
+        map_original_value = map_original.compute()
+        print(f"MAP Value is {map_original_value}.")
