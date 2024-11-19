@@ -2,7 +2,9 @@ import itertools
 
 import logging
 
+import pandas as pd
 from joblib import Parallel, delayed
+from scikit_pierre.metrics.evaluation import MeanAveragePrecision
 
 from checkpoint_verification import CheckpointVerification
 from processing.implicit_recommender_algorithms import ImplicitRecommenderAlgorithm
@@ -153,6 +155,55 @@ class PierreStep3(Step):
                 metric=metric, list_size=list_size, split_methodology=split_methodology
             ) for experiment_name, recommender, dataset, fold, trial, checkpoint, metric, list_size, split_methodology in system_combination
         )
+
+        eval_combination = [
+            [self.experimental_settings['experiment_name']],
+            self.experimental_settings['recommender'], self.experimental_settings['dataset'],
+            self.experimental_settings['fold'], self.experimental_settings['trial'],
+            [self.experimental_settings["split_methodology"]]
+        ]
+
+        for experiment_name, recommender, dataset, fold, trial, split_methodology in list(itertools.product(*eval_combination)):
+            print(
+                "Experiment name: " + experiment_name,
+                "Recommender: " + recommender,
+                "Dataset: " + dataset,
+                "Fold: " + fold,
+                "Trial: " + trial,
+                "Split: " + split_methodology
+            )
+            rec_lists_df = SaveAndLoad.load_candidate_items(
+                experiment_name=experiment_name, split_methodology=split_methodology,
+                dataset=dataset, algorithm=recommender,
+                fold=fold, trial=trial
+            )
+
+            test_set_df = SaveAndLoad.load_test_transactions(
+                experiment_name=experiment_name, split_methodology=split_methodology,
+                dataset=dataset, fold=fold, trial=trial
+            )
+
+            map_instance = MeanAveragePrecision(
+                users_rec_list_df=rec_lists_df,
+                users_test_set_df=test_set_df
+            )
+
+            map_100_value = map_instance.compute()
+            print(f"MAP Value is top-100 {map_100_value}.")
+
+            candidate_items_top_10 = pd.concat(
+                [
+                    df.sort_values(by="TRANSACTION_VALUE", ascending=False).head(self.experimental_settings['list_size'])
+                    for ix, df in rec_lists_df.groupby(by="USER_ID")
+                ]
+            )
+
+            map_instance = MeanAveragePrecision(
+                users_rec_list_df=candidate_items_top_10,
+                users_test_set_df=test_set_df
+            )
+            map_10_value = map_instance.compute()
+            print(f"MAP Value top-{self.experimental_settings['list_size']} is {map_10_value}.")
 
         # Finishing the Step
         logger.info(" ".join(['+' * 10, 'System shutdown', '+' * 10]))

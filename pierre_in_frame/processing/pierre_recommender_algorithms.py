@@ -107,35 +107,3 @@ class PierreRecommenderAlgorithm:
             dataset=self.dataset.system_name, algorithm=self.recommender_name,
             fold=self.fold, trial=self.trial
         )
-        # rec_lists_df = SaveAndLoad.load_candidate_items(
-        #     experiment_name=self.experiment_name, split_methodology=self.split_methodology,
-        #     dataset=self.dataset.system_name, algorithm=self.recommender_name,
-        #     fold=self.fold, trial=self.trial
-        # )
-
-        test_set_df = SaveAndLoad.load_test_transactions(
-            experiment_name=self.experiment_name, split_methodology=self.split_methodology,
-            dataset=self.dataset.system_name, fold=self.fold, trial=self.trial
-        )
-
-        map_instance = MeanAveragePrecision(
-            users_rec_list_df=rec_lists_df,
-            users_test_set_df=test_set_df
-        )
-
-        map_100_value = map_instance.compute()
-        print(f"MAP Value is top-100 {map_100_value}.")
-
-        candidate_items_top_10 = pd.concat(
-            [
-                df.sort_values(by="TRANSACTION_VALUE", ascending=False).head(10)
-                for ix, df in rec_lists_df.groupby(by="USER_ID")
-            ]
-        )
-
-        map_instance = MeanAveragePrecision(
-            users_rec_list_df=candidate_items_top_10,
-            users_test_set_df=test_set_df
-        )
-        map_10_value = map_instance.compute()
-        print(f"MAP Value is top-10 {map_10_value}.")
