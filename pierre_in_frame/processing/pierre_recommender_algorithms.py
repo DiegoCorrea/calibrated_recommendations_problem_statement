@@ -1,5 +1,6 @@
 import logging
 
+import pandas as pd
 from recommender_pierre.autoencoders.CDAEModel import CDAEModel
 from recommender_pierre.autoencoders.DeppAutoEncModel import DeppAutoEncModel
 from recommender_pierre.baselines.Popularity import PopularityRecommender
@@ -81,19 +82,19 @@ class PierreRecommenderAlgorithm:
         """
         # fit the recommender algorithm
         logger.info(">>> Fit the recommender algorithm")
-        self.dataset.set_environment(
-            experiment_name=self.experiment_name,
-            split_methodology=self.split_methodology
-        )
-        if self.split_methodology in Label.BASED_ON_VALIDATION:
-            users_preferences = self.dataset.get_full_train_transactions(
-                fold=self.fold, trial=self.trial
-            )
-        else:
-            users_preferences = self.dataset.get_train_transactions(
-                fold=self.fold, trial=self.trial
-            )
-
+        # self.dataset.set_environment(
+        #     experiment_name=self.experiment_name,
+        #     split_methodology=self.split_methodology
+        # )
+        # if self.split_methodology in Label.BASED_ON_VALIDATION:
+        #     users_preferences = self.dataset.get_full_train_transactions(
+        #         fold=self.fold, trial=self.trial
+        #     )
+        # else:
+        #     users_preferences = self.dataset.get_train_transactions(
+        #         fold=self.fold, trial=self.trial
+        #     )
+        #
         # rec_lists_df = self.recommender.train_and_produce_rec_list(
         #     user_transactions_df=users_preferences
         # )
@@ -112,13 +113,29 @@ class PierreRecommenderAlgorithm:
             fold=self.fold, trial=self.trial
         )
 
-        map_original = MeanAveragePrecision(
-            users_rec_list_df=rec_lists_df,
-            users_test_set_df=SaveAndLoad.load_test_transactions(
-                experiment_name=self.experiment_name, split_methodology=self.split_methodology,
-                dataset=self.dataset.system_name, fold=self.fold, trial=self.trial
-            )
+        test_set_df = SaveAndLoad.load_test_transactions(
+            experiment_name=self.experiment_name, split_methodology=self.split_methodology,
+            dataset=self.dataset.system_name, fold=self.fold, trial=self.trial
         )
 
-        map_original_value = map_original.compute()
-        print(f"MAP Value is {map_original_value}.")
+        map_original = MeanAveragePrecision(
+            users_rec_list_df=rec_lists_df,
+            users_test_set_df=test_set_df
+        )
+
+        map_100_value = map_original.compute()
+        print(f"MAP Value is top-100 {map_100_value}.")
+
+        candidate_items_top_10 = pd.concat(
+            [
+                df.sort_values(by="TRANSACTION_VALUE", ascending=False).head(10)
+                for ix, df in rec_lists_df.groupby(by="USER_ID")
+            ]
+        )
+
+        map_10_value = MeanAveragePrecision(
+            users_rec_list_df=candidate_items_top_10,
+            users_test_set_df=test_set_df
+        )
+
+        print(f"MAP Value is top-10 {map_10_value}.")
