@@ -165,12 +165,12 @@ class PierreStep3(Step):
 
         for experiment_name, recommender, dataset, fold, trial, split_methodology in list(itertools.product(*eval_combination)):
             print(
-                "Experiment name: " + experiment_name,
-                "Recommender: " + recommender,
-                "Dataset: " + dataset,
-                "Fold: " + fold,
-                "Trial: " + trial,
-                "Split: " + split_methodology
+                f"Experiment name: {experiment_name},\n"
+                f"Recommender: {recommender},\n"
+                f"Dataset: {dataset},\n"
+                f"Fold: {fold},\n"
+                f"Trial: {trial},\n"
+                f" split: {split_methodology}\n"
             )
             rec_lists_df = SaveAndLoad.load_candidate_items(
                 experiment_name=experiment_name, split_methodology=split_methodology,
