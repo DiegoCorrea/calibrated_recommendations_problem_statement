@@ -198,11 +198,11 @@ class PierreStep3(Step):
                 ]
             )
 
-            map_instance = MeanAveragePrecision(
+            map_instance_cand = MeanAveragePrecision(
                 users_rec_list_df=candidate_items_top_10,
                 users_test_set_df=test_set_df
             )
-            map_10_value = map_instance.compute()
+            map_10_value = map_instance_cand.compute()
             print(f"MAP Value top-{self.experimental_settings['list_size']} is {map_10_value}.")
 
         # Finishing the Step
