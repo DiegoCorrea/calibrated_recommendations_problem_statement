@@ -8,7 +8,7 @@
   "n_threads": 1,
   "n_cv": 3,
   "dataset": ["yelp"],
-  "recommender": ["BPR", "ALS", "ITEMKNN", "SVD"],
+  "recommender": ["BPR"],
   "fold": 3,
   "trial": 1
 }
