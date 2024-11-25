@@ -3,7 +3,7 @@
   "opt": "RECOMMENDER",
   "split_methodology": "CVTT",
   "n_jobs": 21,
-  "checkpoint": "YES",
+  "checkpoint": "NO",
   "dataset": ["yelp"],
   "recommender": ["BPR", "ALS", "ITEMKNN", "SVD", "POPULARITY_REC"],
   "fold": [1, 2, 3],
