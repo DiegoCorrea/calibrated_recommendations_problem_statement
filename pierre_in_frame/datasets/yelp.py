@@ -47,7 +47,7 @@ class Yelp(Dataset):
         self.cut_value = 4
         self.item_cut_value = 5
         self.profile_len_cut_value = 100
-        self.half_users = True
+        self.half_users = False
 
     # ######################################### #
     # ############# Transactions ############## #
@@ -91,6 +91,7 @@ class Yelp(Dataset):
 
         if self.half_users:
             random.seed(0)
+            print("Getting Half of the users")
             total_users = filtered_raw_transactions[Label.USER_ID].nunique()
             half_users_id = random.choices(
                 filtered_raw_transactions[Label.USER_ID].unique().tolist(),
