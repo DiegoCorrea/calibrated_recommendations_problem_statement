@@ -148,7 +148,7 @@ class PierreStep3(Step):
         print("The total of process is: " + str(len(system_combination)))
 
         # Starting the recommender algorithm
-        Parallel(n_jobs=self.experimental_settings['n_jobs'])(
+        Parallel(n_jobs=int(self.experimental_settings['n_jobs']))(
             delayed(starting_recommender)(
                 experiment_name=experiment_name,
                 recommender=recommender, dataset=dataset, trial=trial, fold=fold, checkpoint=checkpoint,
