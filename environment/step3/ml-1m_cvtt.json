@@ -5,7 +5,7 @@
   "n_jobs": 21,
   "checkpoint": "NO",
   "dataset": ["ml-1m"],
-  "recommender": ["BPR", "ALS", "ITEMKNN", "SVD", "POPULARITY_REC"],
+  "recommender": ["BPR", "ALS", "ITEMKNN", "POPULARITY_REC", "SVD"],
   "fold": [1, 2, 3],
   "trial": [1],
   "list_size": 100,
