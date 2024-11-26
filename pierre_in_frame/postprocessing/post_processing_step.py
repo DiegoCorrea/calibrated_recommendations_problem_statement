@@ -1,6 +1,6 @@
 import logging
 
-from scikit_pierre.tradeoff.calibration import LinearCalibration, LogarithmBias
+from scikit_pierre.tradeoff.calibration import LinearCalibration, LogarithmBias, PopularityCalibration, TwoStageCalibration
 
 from datasets.candidate_items import CandidateItems
 from datasets.registred_datasets import RegisteredDataset
@@ -74,26 +74,35 @@ class PostProcessingStep:
                 item_set=self.dataset.get_items(),
                 users_distribution=self.users_distribution
             )
-        # elif self.tradeoff_component == 'POP_LIN':
-        #     items_dataframe = self.dataset.get_items()
-        #     items_dataframe.drop(["GENRES"])
-        #     items_dataframe.rename(columns={"POPULARITY": "GENRES"}, inplace=True)
-        #     self.tradeoff_instance = PopularityCalibration(
-        #         users_preferences=self.dataset.get_full_train_transactions(fold=fold, trial=trial),
-        #         candidate_items=self.candidate_items.get_candidate_items(),
-        #         item_set=items_dataframe,
-        #         users_distribution=self.users_distribution
-        #     )
-        # elif self.tradeoff_component == 'POP':
-        #     items_dataframe = self.dataset.get_items()
-        #     items_dataframe.drop(["GENRES"])
-        #     items_dataframe.rename(columns={"POPULARITY": "GENRES"}, inplace=True)
-        #     self.tradeoff_instance = PopularityCalibration(
-        #         users_preferences=self.dataset.get_full_train_transactions(fold=fold, trial=trial),
-        #         candidate_items=self.candidate_items.get_candidate_items(),
-        #         item_set=items_dataframe,
-        #         users_distribution=self.users_distribution
-        #     )
+        elif self.tradeoff_component == 'TWOSTAGE':
+            items_dataframe = self.dataset.get_items()
+            # items_dataframe.drop(["GENRES"])
+            # items_dataframe.rename(columns={"POPULARITY": "GENRES"}, inplace=True)
+            self.tradeoff_instance = TwoStageCalibration(
+                users_preferences=self.dataset.get_full_train_transactions(fold=fold, trial=trial),
+                candidate_items=self.candidate_items.get_candidate_items(),
+                item_set=items_dataframe,
+                users_genres_distribution=SaveAndLoad.load_user_preference_distribution(
+                    experiment_name=experiment_name, split_methodology=split_methodology,
+                    dataset=dataset_name, fold=fold, trial=trial, distribution=distribution_component,
+                    distribution_class="GENRE"
+                ),
+                users_popularity_distribution=SaveAndLoad.load_user_preference_distribution(
+                    experiment_name=experiment_name, split_methodology=split_methodology,
+                    dataset=dataset_name, fold=fold, trial=trial, distribution=distribution_component,
+                    distribution_class="POP"
+                )
+            )
+        elif self.tradeoff_component == 'POP':
+            items_dataframe = self.dataset.get_items()
+            items_dataframe.drop(["GENRES"])
+            items_dataframe.rename(columns={"POPULARITY": "GENRES"}, inplace=True)
+            self.tradeoff_instance = PopularityCalibration(
+                users_preferences=self.dataset.get_full_train_transactions(fold=fold, trial=trial),
+                candidate_items=self.candidate_items.get_candidate_items(),
+                item_set=items_dataframe,
+                users_distribution=self.users_distribution
+            )
         else:
             exit(0)
 

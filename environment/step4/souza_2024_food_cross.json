@@ -3,13 +3,13 @@
   "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
   "multiprocessing": "joblib",
   "n_jobs": 61,
-  "checkpoint": "YES",
-  "dataset": ["ml-1m"],
+  "checkpoint": "NO",
+  "dataset": ["food"],
   "recommender": ["BPR", "ALS", "ITEMKNN", "SVD", "POPULARITY_REC"],
   "fold": [1, 2, 3],
   "trial": [1],
-  "tradeoff": ["LOG"],
-  "fairness": ["CHI_SQUARE"],
+  "tradeoff": ["TWOSTAGE"],
+  "fairness": ["KL"],
   "relevance": ["SUM"],
   "weight": [
     "C@0.0", "C@0.1", "C@0.2",
@@ -21,7 +21,6 @@
     "CWS"
   ],
   "distribution_class": [
-    "POP",
     "GENRE"
   ],
   "selector": ["SURROGATE"],

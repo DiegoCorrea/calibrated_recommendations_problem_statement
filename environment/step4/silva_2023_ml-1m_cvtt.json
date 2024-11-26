@@ -3,8 +3,8 @@
   "split_methodology": "CVTT",
   "multiprocessing": "joblib",
   "n_jobs": 61,
-  "checkpoint": "YES",
-  "dataset": ["yelp"],
+  "checkpoint": "NO",
+  "dataset": ["ml-1m"],
   "recommender": ["BPR", "ALS", "ITEMKNN", "SVD", "POPULARITY_REC"],
   "fold": [1, 2, 3],
   "trial": [1],
@@ -21,7 +21,6 @@
     "CWS"
   ],
   "distribution_class": [
-    "POP",
     "GENRE"
   ],
   "selector": ["SURROGATE"],

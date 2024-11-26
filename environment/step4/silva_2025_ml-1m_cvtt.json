@@ -1,0 +1,30 @@
+{
+  "experiment_name": "COMPARING_MODELS",
+  "split_methodology": "CVTT",
+  "multiprocessing": "joblib",
+  "n_jobs": 61,
+  "checkpoint": "NO",
+  "dataset": ["ml-1m"],
+  "recommender": ["BPR", "ALS", "ITEMKNN", "SVD", "POPULARITY_REC"],
+  "fold": [1, 2, 3],
+  "trial": [1],
+  "tradeoff": ["LIN"],
+  "fairness": ["KL"],
+  "relevance": ["SUM"],
+  "weight": [
+    "C@0.0", "C@0.1", "C@0.2",
+    "C@0.3", "C@0.4", "C@0.5",
+    "C@0.6", "C@0.7", "C@0.8",
+    "C@0.9", "C@1.0"
+  ],
+  "distribution": [
+    "GLEB"
+  ],
+  "distribution_class": [
+    "GENRE"
+  ],
+  "selector": ["SURROGATE"],
+  "list_size": [10],
+  "alpha": [0.01],
+  "d": [3]
+}
