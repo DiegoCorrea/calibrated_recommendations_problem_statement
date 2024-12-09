@@ -1,7 +1,7 @@
 {
   "experiment_name": "COMPARING_MODELS",
   "multiprocessing": "starmap",
-  "n_jobs": 4,
+  "n_jobs": 61,
   "opt": "CLASS_DISTRIBUTION",
   "split_methodology": "CVTT",
   "dataset": "food",
