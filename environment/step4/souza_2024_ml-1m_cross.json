@@ -3,7 +3,7 @@
   "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
   "multiprocessing": "starmap",
   "n_jobs": 1,
-  "checkpoint": "NO",
+  "checkpoint": "YES",
   "dataset": ["ml-1m"],
   "recommender": ["BPR"],
   "fold": [1, 2, 3],

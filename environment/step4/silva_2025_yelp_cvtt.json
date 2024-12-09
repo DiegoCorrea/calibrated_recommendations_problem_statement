@@ -3,7 +3,7 @@
   "split_methodology": "CVTT",
   "multiprocessing": "starmap",
   "n_jobs": 61,
-  "checkpoint": "NO",
+  "checkpoint": "YES",
   "dataset": ["yelp"],
   "recommender": ["BPR", "ALS", "ITEMKNN", "SVD", "POPULARITY_REC"],
   "fold": [1, 2, 3],
