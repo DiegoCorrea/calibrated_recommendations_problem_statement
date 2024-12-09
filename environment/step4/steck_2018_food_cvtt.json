@@ -1,7 +1,7 @@
 {
   "experiment_name": "COMPARING_MODELS",
   "split_methodology": "CVTT",
-  "multiprocessing": "joblib",
+  "multiprocessing": "starmap",
   "n_jobs": 61,
   "checkpoint": "NO",
   "dataset": ["food"],
