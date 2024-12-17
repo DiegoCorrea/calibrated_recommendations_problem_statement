@@ -19,7 +19,7 @@ def applying_evaluation_metrics(
         experiment_name: str, split_methodology: str,
         metrics: list, recommender: str, dataset: str, trial: int, fold: int,
         distribution: str, fairness: str, relevance: str, weight: str, tradeoff: str, selector: str,
-        checkpoint: str
+        checkpoint: str, distribution_class:str
 ) -> None:
     """
     Function to apply the evaluation metrics.
@@ -28,7 +28,8 @@ def applying_evaluation_metrics(
         experiment_name=experiment_name, split_methodology=split_methodology,
         recommender=recommender, dataset=dataset, trial=trial, fold=fold,
         distribution=distribution, fairness=fairness, relevance=relevance,
-        weight=weight, tradeoff=tradeoff, selector=selector, checkpoint=checkpoint
+        weight=weight, tradeoff=tradeoff, selector=selector, checkpoint=checkpoint,
+        distribution_class=distribution_class
     )
     instance.load()
     for m in metrics:
@@ -197,7 +198,7 @@ class PierreStep5(Step):
             self.experimental_settings['distribution'], self.experimental_settings['fairness'],
             self.experimental_settings['relevance'], self.experimental_settings['weight'],
             self.experimental_settings['tradeoff'], self.experimental_settings['selector'],
-            [self.experimental_settings["checkpoint"]]
+            [self.experimental_settings["checkpoint"]], self.experimental_settings["distribution_class"]
         ]
         process_combination = list(itertools.product(*combination))
         print(f"The total of process that will be run are: {len(process_combination)}")
@@ -211,17 +212,17 @@ class PierreStep5(Step):
                     experiment_name=experiment_name, split_methodology=split_methodology,
                     recommender=recommender, dataset=dataset, trial=trial, fold=fold,
                     distribution=distribution, fairness=fairness, relevance=relevance,
-                    weight=weight, tradeoff=tradeoff, selector=selector, checkpoint=checkpoint
+                    weight=weight, tradeoff=tradeoff, selector=selector, checkpoint=checkpoint,
+                    distribution_class=distribution_class
                 ) for
-                experiment_name, split_methodology, recommender, dataset, trial, fold, distribution, fairness, relevance, weight, tradeoff, selector, checkpoint
+                experiment_name, split_methodology, recommender, dataset, trial, fold, distribution, fairness, relevance, weight, tradeoff, selector, checkpoint, distribution_class
                 in process_combination
             )
         elif self.experimental_settings['multiprocessing'] == "starmap":
             process_args = []
-            for experiment_name, split_methodology, recommender, tradeoff, relevance, distribution, selector, weight, calibration, list_size, alpha, d, checkpoint, dataset, fold, trial in process_combination:
+            for experiment_name, split_methodology, recommender, dataset, trial, fold, distribution, calibration, relevance, weight, tradeoff, selector, checkpoint, distribution_class in process_combination:
                 process_args.append((
-                    experiment_name, split_methodology, recommender, fold, trial, dataset, tradeoff, distribution, calibration, relevance, weight, selector,
-                    list_size, alpha, d, checkpoint
+                    experiment_name, split_methodology, self.experimental_settings['metric'], recommender, dataset, trial, fold, distribution, calibration, relevance, weight, tradeoff, selector, checkpoint, distribution_class
                 ))
             pool = multiprocessing.Pool(processes=self.experimental_settings["n_jobs"])
             pool.starmap(applying_evaluation_metrics, process_args)
