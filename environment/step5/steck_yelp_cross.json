@@ -9,7 +9,7 @@
     "MACE",
     "MAP"
   ],
-  "recommender": ["BPR", "ALS", "ITEMKNN", "SVD", "POPULARITY_REC"],
+  "recommender": ["BPR", "ALS", "SVD", "POPULARITY_REC"],
   "dataset": ["yelp"],
   "fold": [1, 2, 3],
   "trial": [1],
@@ -24,6 +24,9 @@
   ],
   "distribution": [
     "CWS"
+  ],
+  "distribution_class": [
+    "GENRE"
   ],
   "selector": ["SURROGATE"]
 }
