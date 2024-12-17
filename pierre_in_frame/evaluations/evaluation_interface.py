@@ -28,7 +28,7 @@ class ApplyingMetric:
             recommender: str, dataset: str, trial: int, fold: int,
             distribution: str, fairness: str, relevance: str,
             weight: str, tradeoff: str, selector: str,
-            checkpoint: str
+            checkpoint: str, distribution_class: str
     ):
         """
 
@@ -46,6 +46,7 @@ class ApplyingMetric:
         self.tradeoff = tradeoff
         self.selector = selector
         self.checkpoint = checkpoint
+        self.distribution_class = distribution_class
         self.metric = None
         self.users_prof_df = None
         self.target_dist = None
@@ -77,7 +78,8 @@ class ApplyingMetric:
             recommender=self.recommender, dataset=self.dataset, trial=self.trial, fold=self.fold,
             distribution=self.distribution, fairness=self.fairness, relevance=self.relevance,
             tradeoff_weight=self.weight, tradeoff=self.tradeoff, select_item=self.selector,
-            experiment_name=self.experiment_name, split_methodology=self.split_methodology
+            experiment_name=self.experiment_name, split_methodology=self.split_methodology,
+            distribution_class=self.distribution_class
         )
 
     def load_rec_baseline(self):
@@ -89,7 +91,8 @@ class ApplyingMetric:
                 recommender=self.recommender, dataset=self.dataset, trial=self.trial, fold=self.fold,
                 distribution=self.distribution, fairness=self.fairness, relevance=self.relevance,
                 tradeoff_weight="C@0.0", tradeoff=self.tradeoff, select_item=self.selector,
-            experiment_name=self.experiment_name, split_methodology=self.split_methodology
+                experiment_name=self.experiment_name, split_methodology=self.split_methodology,
+                distribution_class=self.distribution_class
             )
 
     def load_items_set(self):
@@ -140,7 +143,8 @@ class ApplyingMetric:
                 target_dist = SaveAndLoad.load_user_preference_distribution(
                     dataset=self.dataset, fold=self.fold, trial=self.trial,
                     distribution=self.distribution,
-                    experiment_name=self.experiment_name, split_methodology=self.split_methodology
+                    experiment_name=self.experiment_name, split_methodology=self.split_methodology,
+                    distribution_class=self.distribution_class
                 )
                 self.target_dist = target_dist.to_dict('index')
         except IOError or FileNotFoundError as e:
@@ -296,7 +300,8 @@ class ApplyingMetric:
             recommender=self.recommender, dataset=self.dataset, trial=self.trial, fold=self.fold,
             distribution=self.distribution, fairness=self.fairness, relevance=self.relevance,
             weight=self.weight, tradeoff=self.tradeoff, selector=self.selector,
-            experiment_name=self.experiment_name, split_methodology=self.split_methodology
+            experiment_name=self.experiment_name, split_methodology=self.split_methodology,
+            distribution_class=self.distribution_class
         )
 
     def verifying_checkpoint(self):
@@ -308,7 +313,8 @@ class ApplyingMetric:
                 distribution=self.distribution, fairness=self.fairness,
                 relevance=self.relevance,
                 weight=self.weight, tradeoff=self.tradeoff, selector=self.selector,
-                experiment_name=self.experiment_name, split_methodology=self.split_methodology
+                experiment_name=self.experiment_name, split_methodology=self.split_methodology,
+                distribution_class=self.distribution_class
             )
         ):
             return True

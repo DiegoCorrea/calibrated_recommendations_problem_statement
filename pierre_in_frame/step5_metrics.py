@@ -91,7 +91,7 @@ def applying_evaluation_metrics(
 def starting_cluster(
         cluster: str, experiment_name: str, split_methodology: str, recommender: str, dataset: str, trial: int, fold: int,
         distribution: str, fairness: str, relevance: str, weight: str, tradeoff: str, selector: str,
-        checkpoint: str
+        checkpoint: str, distribution_class: str
 ):
     """
     TODO
@@ -112,7 +112,8 @@ def starting_cluster(
             cluster=cluster, metric=Label.JACCARD_SCORE, recommender=recommender,
             distribution=distribution, fairness=fairness, relevance=relevance,
             weight=weight, tradeoff=tradeoff, selector=selector,
-            experiment_name=experiment_name, split_methodology=split_methodology
+            experiment_name=experiment_name, split_methodology=split_methodology,
+            distribution_class=distribution_class
     ):
         logger.info(">> Already Done... " + system_name)
         return "Already Done"
@@ -243,7 +244,7 @@ class PierreStep5(Step):
             self.experimental_settings['distribution'], self.experimental_settings['fairness'],
             self.experimental_settings['relevance'], self.experimental_settings['weight'],
             self.experimental_settings['tradeoff'], self.experimental_settings['selector'],
-            [self.experimental_settings["checkpoint"]]
+            [self.experimental_settings["checkpoint"]], self.experimental_settings["distribution_class"]
         ]
         print(f"The total of process that will be run are: {len(combination)}")
 
@@ -252,9 +253,10 @@ class PierreStep5(Step):
                 cluster=cluster, experiment_name=experiment_name, split_methodology=split_methodology,
                 recommender=recommender, dataset=dataset, trial=trial, fold=fold,
                 distribution=distribution, fairness=fairness, relevance=relevance,
-                weight=weight, tradeoff=tradeoff, selector=selector, checkpoint=checkpoint
+                weight=weight, tradeoff=tradeoff, selector=selector, checkpoint=checkpoint,
+                distribution_class=distribution_class
             ) for
-            cluster, experiment_name, split_methodology, recommender, dataset, trial, fold, distribution, fairness, relevance, weight, tradeoff, selector, checkpoint
+            cluster, experiment_name, split_methodology, recommender, dataset, trial, fold, distribution, fairness, relevance, weight, tradeoff, selector, checkpoint, distribution_class
             in list(itertools.product(*combination))
         )
 
