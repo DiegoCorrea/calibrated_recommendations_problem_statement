@@ -1,0 +1,32 @@
+{
+  "experiment_name": "COMPARING_MODELS",
+  "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
+  "multiprocessing": "starmap",
+  "n_jobs": 61,
+  "checkpoint": "NO",
+  "opt": "EVALUATION_METRICS",
+  "metric": [
+    "MACE",
+    "MAP"
+  ],
+  "recommender": ["BPR", "ALS", "SVD", "POPULARITY_REC"],
+  "dataset": ["ml-1m"],
+  "fold": [1, 2, 3],
+  "trial": [1],
+  "tradeoff": ["LOG"],
+  "fairness": ["VICIS_EMANON2"],
+  "relevance": ["NDCG"],
+  "weight": [
+    "C@0.0", "C@0.1", "C@0.2",
+    "C@0.3", "C@0.4", "C@0.5",
+    "C@0.6", "C@0.7", "C@0.8",
+    "C@0.9", "C@1.0"
+  ],
+  "distribution": [
+    "WPS"
+  ],
+  "distribution_class": [
+    "GENRE"
+  ],
+  "selector": ["SURROGATE"]
+}
