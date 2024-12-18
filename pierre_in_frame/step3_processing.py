@@ -147,17 +147,33 @@ class PierreStep3(Step):
         system_combination = list(itertools.product(*combination))
         print("The total of process is: " + str(len(system_combination)))
 
-        # Starting the recommender algorithm
-        Parallel(
-            n_jobs=int(self.experimental_settings['n_jobs']), verbose=10, batch_size=1,
-            backend="multiprocessing", prefer="processes"
-        )(
-            delayed(starting_recommender)(
-                experiment_name=experiment_name,
-                recommender=recommender, dataset=dataset, trial=trial, fold=fold, checkpoint=checkpoint,
-                metric=metric, list_size=list_size, split_methodology=split_methodology
-            ) for experiment_name, recommender, dataset, fold, trial, checkpoint, metric, list_size, split_methodology in system_combination
-        )
+        if self.experimental_settings['multiprocessing'] == "joblib":
+            # Starting the recommender algorithm
+            Parallel(
+                n_jobs=int(self.experimental_settings['n_jobs']), verbose=10, batch_size=1,
+                backend="multiprocessing", prefer="processes"
+            )(
+                delayed(starting_recommender)(
+                    experiment_name=experiment_name,
+                    recommender=recommender, dataset=dataset, trial=trial, fold=fold, checkpoint=checkpoint,
+                    metric=metric, list_size=list_size, split_methodology=split_methodology
+                ) for experiment_name, recommender, dataset, fold, trial, checkpoint, metric, list_size, split_methodology in system_combination
+            )
+        elif self.experimental_settings['multiprocessing'] == "starmap":
+            process_args = []
+            for experiment_name, recommender, dataset, fold, trial, checkpoint, metric, list_size, split_methodology in system_combination:
+                process_args.append((
+                    experiment_name, dataset, recommender, trial, fold, checkpoint, metric, list_size, split_methodology
+                ))
+            pool = multiprocessing.Pool(processes=self.experimental_settings["n_jobs"])
+            pool.starmap(starting_postprocessing, process_args)
+            pool.close()
+            pool.join()
+        else:
+            logger.warning(
+                f"The multiprocessing option {self.experimental_settings['multiprocessing']} does not exist! Please check for a possible option.")
+            exit(1)
+
 
         eval_combination = [
             [self.experimental_settings['experiment_name']],

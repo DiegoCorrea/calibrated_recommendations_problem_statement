@@ -2,6 +2,7 @@
   "experiment_name": "COMPARING_MODELS",
   "opt": "RECOMMENDER",
   "split_methodology": "CVTT",
+  "multiprocessing": "starmap",
   "n_jobs": 21,
   "checkpoint": "NO",
   "dataset": ["yelp"],
