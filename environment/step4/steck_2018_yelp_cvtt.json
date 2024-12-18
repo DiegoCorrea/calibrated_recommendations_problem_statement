@@ -5,7 +5,7 @@
   "n_jobs": 61,
   "checkpoint": "YES",
   "dataset": ["yelp"],
-  "recommender": ["BPR", "ALS", "SVD", "POPULARITY_REC"],
+  "recommender": ["BPR", "ALS", "SVD", "ITEMKNN", "POPULARITY_REC"],
   "fold": [1, 2, 3],
   "trial": [1],
   "tradeoff": ["LIN"],
@@ -15,7 +15,10 @@
     "C@0.0", "C@0.1", "C@0.2",
     "C@0.3", "C@0.4", "C@0.5",
     "C@0.6", "C@0.7", "C@0.8",
-    "C@0.9", "C@1.0"
+    "C@0.9", "C@1.0",
+    "CGR", "VAR",
+    "STD", "TRT",
+    "AMP", "EFF"
   ],
   "distribution": [
     "CWS"
