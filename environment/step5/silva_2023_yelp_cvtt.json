@@ -3,7 +3,7 @@
   "split_methodology": "CVTT",
   "multiprocessing": "starmap",
   "n_jobs": 61,
-  "checkpoint": "NO",
+  "checkpoint": "YES",
   "opt": "EVALUATION_METRICS",
   "metric": [
     "MACE",

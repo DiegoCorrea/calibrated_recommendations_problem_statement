@@ -3,7 +3,7 @@
   "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
   "multiprocessing": "starmap",
   "n_jobs": 61,
-  "checkpoint": "NO",
+  "checkpoint": "YES",
   "opt": "EVALUATION_METRICS",
   "metric": [
     "MAP",
