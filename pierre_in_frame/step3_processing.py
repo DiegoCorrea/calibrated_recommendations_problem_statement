@@ -167,7 +167,7 @@ class PierreStep3(Step):
                     experiment_name, dataset, recommender, trial, fold, checkpoint, metric, list_size, split_methodology
                 ))
             pool = multiprocessing.Pool(processes=self.experimental_settings["n_jobs"])
-            pool.starmap(starting_postprocessing, process_args)
+            pool.starmap(starting_recommender, process_args)
             pool.close()
             pool.join()
         else:
