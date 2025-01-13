@@ -67,7 +67,7 @@ class ImplicitRecommenderAlgorithm:
                 random_state=full_params["params"]["random_state"], num_threads=1
             )
         elif self.recommender_name == Label.ITEMKNN:
-            self.recommender = implicit.nearest_neighbours.CosineRecommender(
+            self.recommender = implicit.nearest_neighbours.ItemItemRecommender(
                 K=full_params["params"]["K"]
             )
         elif self.recommender_name == Label.LMF:

@@ -180,7 +180,7 @@ class ImplicitGridSearch(BaseSearch):
         mrr_value = []
 
         for train, validation in zip(train_list, valid_list):
-            recommender = implicit.nearest_neighbours.CosineRecommender(
+            recommender = implicit.nearest_neighbours.ItemItemRecommender(
                 K=k
             )
             rec_lists_df = ImplicitGridSearch.__run__(
