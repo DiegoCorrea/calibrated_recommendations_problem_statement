@@ -6,7 +6,6 @@
   "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
   "dataset": "ml-1m",
   "distribution": [
-    "CWS",
     "WPS"
   ],
   "distribution_class": [

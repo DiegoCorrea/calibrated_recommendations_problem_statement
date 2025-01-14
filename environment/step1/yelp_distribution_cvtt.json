@@ -6,7 +6,6 @@
   "split_methodology": "CVTT",
   "dataset": "yelp",
   "distribution": [
-    "CWS",
     "WPS"
   ],
   "distribution_class": [

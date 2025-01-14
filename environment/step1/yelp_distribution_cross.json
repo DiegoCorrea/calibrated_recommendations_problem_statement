@@ -6,7 +6,6 @@
   "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
   "dataset": "yelp",
   "distribution": [
-    "CWS",
     "WPS"
   ],
   "distribution_class": [
