@@ -95,7 +95,7 @@ class PostProcessingStep:
             )
         elif self.tradeoff_component == 'POP':
             items_dataframe = self.dataset.get_items()
-            items_dataframe.drop(["GENRES"])
+            items_dataframe.drop(columns=["GENRES"])
             items_dataframe.rename(columns={"POPULARITY": "GENRES"}, inplace=True)
             self.tradeoff_instance = PopularityCalibration(
                 users_preferences=self.dataset.get_full_train_transactions(fold=fold, trial=trial),
