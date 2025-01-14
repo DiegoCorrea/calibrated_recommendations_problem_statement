@@ -6,7 +6,7 @@
   "n_jobs": 21,
   "checkpoint": "NO",
   "dataset": ["food"],
-  "recommender": ["ITEMKNN"],
+  "recommender": ["BPR", "ALS", "SVD", "ITEMKNN", "POPULARITY_REC"],
   "fold": [1, 2, 3],
   "trial": [1],
   "list_size": 100,
