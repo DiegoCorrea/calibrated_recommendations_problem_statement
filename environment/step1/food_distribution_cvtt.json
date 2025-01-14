@@ -4,7 +4,8 @@
   "split_methodology": "CVTT",
   "opt": "DISTRIBUTION",
   "distribution": [
-    "CWS"
+    "CWS",
+    "WPS"
   ],
   "distribution_class": [
     "POP",

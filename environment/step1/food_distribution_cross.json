@@ -4,7 +4,8 @@
   "split_methodology": "CROSS_TRAIN_VALIDATION_TEST",
   "opt": "DISTRIBUTION",
   "distribution": [
-    "CWS"
+    "CWS",
+    "WPS"
   ],
   "distribution_class": [
     "POP",
