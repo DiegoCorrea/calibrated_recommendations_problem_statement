@@ -9,7 +9,7 @@
     "MACE",
     "MAP"
   ],
-  "recommender": ["BPR", "ALS", "SVD", "POPULARITY_REC"],
+  "recommender": ["BPR", "ALS", "SVD", "ITEMKNN", "POPULARITY_REC"],
   "dataset": ["yelp"],
   "fold": [1, 2, 3],
   "trial": [1],
