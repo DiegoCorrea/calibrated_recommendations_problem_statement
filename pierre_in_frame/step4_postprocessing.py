@@ -33,7 +33,7 @@ def starting_postprocessing(
     system_name = "-".join([
         experiment_name,
         dataset, split_methodology, 'trial-' + str(trial), 'fold-' + str(fold), recommender,
-        tradeoff, distribution, distribution_class, relevance, selector, calibration, tradeoff
+        tradeoff, distribution, distribution_class, relevance, selector, calibration, weight
     ])
 
     if checkpoint == "YES" and CheckpointVerification.unit_step4_verification(
