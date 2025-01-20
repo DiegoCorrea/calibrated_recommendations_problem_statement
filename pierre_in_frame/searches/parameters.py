@@ -11,7 +11,7 @@ class SurpriseParams:
     # 2: Item KNN
     ITEM_KNN_SEARCH_PARAMS = {
         "k": randint(3, 201).rvs(size=size),
-        "sim_options": {'name': ['pearson', 'cosine', 'msd'], 'user_based': [False]}
+        "sim_options": {'name': 'cosine', 'user_based': False}
     }
     # 3: SVD
     SVD_SEARCH_PARAMS = {

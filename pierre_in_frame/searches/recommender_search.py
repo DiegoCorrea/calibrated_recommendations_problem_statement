@@ -287,7 +287,7 @@ class SurpriseRandomSearch(BaseSearch):
 
         for train, validation in zip(train_list, valid_list):
             recommender = KNNBasic(
-                k=k
+                k=k, sim_options=sim_options
             )
             rec_lists_df = SurpriseRandomSearch.__run__(
                 recommender=recommender, users_preferences=train, list_size=list_size,
@@ -321,6 +321,18 @@ class SurpriseRandomSearch(BaseSearch):
 
     def get_user_knn_params(self):
         param_distributions = SurpriseParams.USER_KNN_SEARCH_PARAMS
+
+        combination = list(itertools.product(*[
+            param_distributions['k'], [param_distributions['sim_options']]
+        ]))
+        if self.n_inter < len(combination):
+            params_to_use = random.sample(combination, self.n_inter)
+        else:
+            params_to_use = combination
+        return params_to_use
+
+    def get_item_knn_params(self):
+        param_distributions = SurpriseParams.ITEM_KNN_SEARCH_PARAMS
 
         combination = list(itertools.product(*[
             param_distributions['k'], [param_distributions['sim_options']]
@@ -438,7 +450,7 @@ class SurpriseRandomSearch(BaseSearch):
                 pool.close()
                 pool.join()
 
-        elif self.algorithm == Label.USER_KNN_BASIC:
+        elif self.algorithm == Label.USER_KNN_BASIC or self.algorithm == Label.ITEM_KNN_BASIC:
             params_to_use = self.get_user_knn_params()
             print("Total of combinations: ", str(len(params_to_use)))
 
@@ -455,8 +467,7 @@ class SurpriseRandomSearch(BaseSearch):
                         experiment_name=deepcopy(self.experiment_name),
                         algorithm=deepcopy(self.algorithm),
                         dataset_name=deepcopy(self.dataset.system_name)
-                    ) for k, sim_options
-                    in params_to_use
+                    ) for k, sim_options in params_to_use
                 )
             else:
                 process_args = []
