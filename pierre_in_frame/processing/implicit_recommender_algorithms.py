@@ -72,6 +72,12 @@ class ImplicitRecommenderAlgorithm:
             )
         elif self.recommender_name == Label.LMF:
             pass
+        elif self.recommender_name == Label.BM25:
+            self.recommender = implicit.nearest_neighbours.BM25Recommender(
+                K=full_params["params"]["K"],
+                K1=full_params["params"]["K1"],
+                B=full_params["params"]["B"]
+            )
         else:
             pass
 
