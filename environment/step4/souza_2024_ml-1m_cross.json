@@ -5,7 +5,7 @@
   "n_jobs": 61,
   "checkpoint": "YES",
   "dataset": ["ml-1m"],
-  "recommender": ["BPR", "ALS", "SVD", "POPULARITY_REC"],
+  "recommender": ["BM25"],
   "fold": [1, 2, 3],
   "trial": [1],
   "tradeoff": ["TWOSTAGE"],
