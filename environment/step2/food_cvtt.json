@@ -8,7 +8,7 @@
   "n_threads": 1,
   "n_cv": 3,
   "dataset": ["food"],
-  "recommender": ["BPR", "ALS", "SVD"],
+  "recommender": ["NMF"],
   "fold": 3,
   "trial": 1
 }
