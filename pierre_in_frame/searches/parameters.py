@@ -46,6 +46,11 @@ class ImplicitParams:
     ITEM_KNN_SEARCH_PARAMS = {
         "k": randint(3, 203).rvs(size=size)
     }
+    BM25_SEARCH_PARAMS = {
+        "k": randint(3, 203).rvs(size=size),
+        "k1": uniform(0.01, 10).rvs(size=size),
+        "b": uniform(0.01, 10).rvs(size=size),
+    }
     ALS_PARAMS = {
         "factors": randint(10, 150).rvs(size=size),
         "regularization": uniform(0.0003, 0.1).rvs(size=size),

@@ -211,6 +211,48 @@ class ImplicitGridSearch(BaseSearch):
             split_methodology=split_methodology, experiment_name=experiment_name
         )
 
+    @staticmethod
+    def fit_bm25(
+            k, k1, b, train_list, valid_list, list_size,
+            split_methodology, experiment_name, algorithm, dataset_name
+    ):
+        map_value = []
+        mrr_value = []
+
+        for train, validation in zip(train_list, valid_list):
+            recommender = implicit.nearest_neighbours.BM25Recommender(
+                K=k, K1=k1, B=b
+            )
+            rec_lists_df = ImplicitGridSearch.__run__(
+                recommender=recommender, users_preferences=train, list_size=list_size
+            )
+            metric_instance = MeanAveragePrecision(
+                users_rec_list_df=rec_lists_df,
+                users_test_set_df=validation
+            )
+            mrr_metric_instance = MeanReciprocalRank(
+                users_rec_list_df=rec_lists_df,
+                users_test_set_df=validation
+            )
+            map_value.append(metric_instance.compute())
+            mrr_value.append(mrr_metric_instance.compute())
+        print(f"map list: {map_value}\n"
+              f"mrr list: {mrr_value}")
+
+        params = {
+            "map": mean(map_value),
+            "mrr": mean(mrr_value),
+            "params": {
+                "K": k,
+                "K1": k1,
+                "B": b
+            }
+        }
+        ImplicitGridSearch.defining_metric_and_save_during_run(
+            dataset_name=dataset_name, algorithm=algorithm, params=params,
+            split_methodology=split_methodology, experiment_name=experiment_name
+        )
+
     def get_als_params(self):
         param_distributions = ImplicitParams.ALS_PARAMS
 
@@ -243,6 +285,20 @@ class ImplicitGridSearch(BaseSearch):
         param_distributions = ImplicitParams.ITEM_KNN_SEARCH_PARAMS
 
         combination = list(param_distributions['k'])
+        if self.n_inter < int(len(combination)):
+            params_to_use = random.sample(combination, self.n_inter)
+        else:
+            params_to_use = combination
+        return params_to_use
+
+    def get_bm25_params(self):
+        param_distributions = ImplicitParams.BM25_SEARCH_PARAMS
+
+        combination = list(itertools.product(*[
+            param_distributions['k'],
+            param_distributions['k1'],
+            param_distributions['b']
+        ]))
         if self.n_inter < int(len(combination)):
             params_to_use = random.sample(combination, self.n_inter)
         else:
@@ -345,6 +401,36 @@ class ImplicitGridSearch(BaseSearch):
                     ))
                 pool = multiprocessing.Pool(processes=self.n_jobs)
                 pool.starmap(ImplicitGridSearch.fit_item_knn, process_args)
+                pool.close()
+                pool.join()
+        elif self.algorithm == Label.BM25:
+            params_to_use = self.get_bm25_params()
+            print("Total of combinations: ", str(len(params_to_use)))
+            if self.multiprocessing_lib == Label.JOBLIB:
+
+                # Starting the recommender algorithm
+                Parallel(n_jobs=self.n_jobs)(
+                    delayed(ImplicitGridSearch.fit_bm25)(
+                        k=k, k1=k1, b=b,
+                        train_list=deepcopy(self.train_list),
+                        valid_list=deepcopy(self.valid_list),
+                        list_size=self.list_size,
+                        experiment_name=deepcopy(self.experiment_name),
+                        algorithm=deepcopy(self.algorithm),
+                        dataset_name=deepcopy(self.dataset.system_name)
+                    ) for k, k1, b in params_to_use
+                )
+            else:
+                process_args = []
+                for k, k1, b in params_to_use:
+                    process_args.append((
+                        k, k1, b,
+                        deepcopy(self.train_list), deepcopy(self.valid_list), self.list_size,
+                        deepcopy(self.split_methodology), deepcopy(self.experiment_name),
+                        deepcopy(self.algorithm), deepcopy(self.dataset.system_name)
+                    ))
+                pool = multiprocessing.Pool(processes=self.n_jobs)
+                pool.starmap(ImplicitGridSearch.fit_bm25, process_args)
                 pool.close()
                 pool.join()
         else:

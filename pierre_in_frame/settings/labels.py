@@ -81,9 +81,10 @@ class Label:
     BPR = "BPR"
     LMF = "LMF"
     ITEMKNN = "ITEMKNN"
+    BM25 = "BM25"
 
     IMPLICIT_RECOMMENDERS = [
-        ALS, BPR, LMF, ITEMKNN
+        ALS, BPR, LMF, ITEMKNN, BM25
     ]
 
     DEEP_AE = "DEEP_AE"
