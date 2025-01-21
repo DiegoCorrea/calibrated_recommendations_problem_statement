@@ -221,7 +221,7 @@ class ImplicitGridSearch(BaseSearch):
 
         for train, validation in zip(train_list, valid_list):
             recommender = implicit.nearest_neighbours.BM25Recommender(
-                K=k, K1=k1, B=b
+                K=k, K1=k1, B=b, num_threads=1
             )
             rec_lists_df = ImplicitGridSearch.__run__(
                 recommender=recommender, users_preferences=train, list_size=list_size
