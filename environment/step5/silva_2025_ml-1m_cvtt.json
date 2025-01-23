@@ -23,7 +23,8 @@
     "C@0.9", "C@1.0",
     "CGR", "VAR",
     "STD", "TRT",
-    "AMP", "EFF"
+    "AMP", "EFF",
+    "MIT"
   ],
   "distribution": [
     "GLEB"
